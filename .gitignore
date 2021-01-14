@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Binary files
+*.o
+src/PyMiniSolvers
