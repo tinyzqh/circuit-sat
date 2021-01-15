@@ -15,7 +15,7 @@ mkdir aiger
 cd aiger
 wget http://fmv.jku.at/aiger/aiger-1.9.9.tar.gz
 tar -xf aiger-1.9.9.tar.gz
-mv aiger-1.9.9.tar.gz aiger
+mv aiger-1.9.9 aiger
 rm aiger-1.9.9.tar.gz
 cd aiger
 ./configure.sh && make
