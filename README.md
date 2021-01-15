@@ -28,6 +28,17 @@ The installation of these libraries is all include [Setup.sh](setup.sh).
 The exact structure/representation of GNNs for AIG graph is still to be determined.
 I might first consider the intrinsic properties of [AIG](https://en.wikipedia.org/wiki/And-inverter_graph), and their AND nodes/Inverter edges.
 
-Also, C-VAE, D-VAE, and Heterogeneous Graph Embedding can be referred.
+Also, C-VAE, D-VAE, Attention Mechanism and Heterogeneous Graph Embedding can be referred.
+
+I think using an adjacency matrix to represent the ordering of the nodes and the connections between nodes would be a feasible solution.
+
+### Problem
+1. Are Permutation invariance and negation invariance (mentioned in *NeuronSAT*) existing in AIG representation?
+2. How to solve SAT problem in a sensible way?
+
+### TO DO
+- [ ] Try small-scale problems, *i.e.*, r3to10 problems.
+
+
 
 
