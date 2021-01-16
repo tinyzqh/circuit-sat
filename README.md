@@ -20,8 +20,8 @@ The downloading and installation of these libraries are packed in [setup.sh](set
 ### Workflow
 * **Step1**: *PyMiniSovlers* to generate SAT and UNSAT pairs in *dimacs* format, which representing the propositional equations as CNF;
 * **Step2**: *CNFtoAIG* to convert the CNF circuits into AIG circuits;
-* **Step3** (Optional): *aigtoaig* (utilities in *AIGER*) to convert ASCII AIGER format (\*.agg) into binary AIGER (\*.aig) format.
-* **Step4**: *ABC* to optimize AIG and output optimized AIG, which is usually be done for synthesis.
+* **Step3**: *ABC* to optimize AIG and output optimized AIG, which is usually be done for synthesis.
+* **Step4** (Optional): *aigtoaig* (utilities in *AIGER*) to convert ASCII AIGER format (\*.agg) into binary AIGER (\*.aig) format.
 * **Step5** (TO DO): Parse and construct graph representation in PyTorch using generate AIG file.
 
 ## Graph Neural Networks
