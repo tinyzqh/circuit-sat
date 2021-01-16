@@ -24,7 +24,6 @@ if __name__ == '__main__':
         subprocess.call(["./src/aiger/cnf2aig/cnf2aig", dimacs_name, aig_name])
 
 
-
         
 
 

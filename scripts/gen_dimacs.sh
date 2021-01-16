@@ -1,10 +1,3 @@
-# for setname in "train" "test" ; do
-#     rm -rf data/dimacs/$setname/sr3to10
-#     mkdir -p data/dimacs/$setname/sr3to10
-# 	python3 python/gen_sr_dimacs.py data/dimacs/$setname/sr3to10 300000 --min_n 3 --max_n 10
-#     done;
-# done;
-
 # train
 DIR_TRAIN="data/dimacs/train/sr3to10"
 DIR_LOG="log/gen_sr3to10_train.log"
