@@ -15,7 +15,7 @@ The libraries we need:
 3. [CNFtoAIG](http://fmv.jku.at/cnf2aig/): A converter extracts an AIG in AIGER format from a CNF in DIMACS format;
 4. [PyMiniSolvers](https://github.com/liffiton/PyMiniSolvers): a Python API for the MiniSat and MiniCard constraint solvers.
 
-The installation of these libraries is all include [Setup.sh](setup.sh).
+The downloading and installation of these libraries are packed in [setup.sh](setup.sh).
 
 ### Workflow
 * **Step1**: *PyMiniSovlers* to generate SAT and UNSAT pairs in *dimacs* format, which representing the propositional equations as CNF;
@@ -28,7 +28,7 @@ The installation of these libraries is all include [Setup.sh](setup.sh).
 The exact structure/representation of GNNs for AIG graph is still to be determined.
 I might first consider the intrinsic properties of [AIG](https://en.wikipedia.org/wiki/And-inverter_graph), and their AND nodes/Inverter edges.
 
-Also, C-VAE, D-VAE, Attention Mechanism and Heterogeneous Graph Embedding can be referred.
+Also, C-VAE, [D-VAE](https://github.com/muhanzhang/D-VAE), Attention Mechanism and Heterogeneous Graph Embedding can be referred.
 
 I think using an adjacency matrix to represent the ordering of the nodes and the connections between nodes would be a feasible solution.
 
@@ -37,7 +37,7 @@ I think using an adjacency matrix to represent the ordering of the nodes and the
 2. How to solve SAT problem in a sensible way?
 
 ### TO DO
-- [ ] Try small-scale problems, *i.e.*, r3to10 problems.
+- [ ] Try small-size problems, *i.e.*, r3to10 problems.
 
 
 

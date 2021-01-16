@@ -36,9 +36,7 @@ def generate_k_iclause(n, k):
     vs = np.random.choice(n, size=min(n, k), replace=False)
     return [v + 1 if random.random() < 0.5 else -(v + 1) for v in vs]
 
-def gen_iclause_pair(opts):
-    n = random.randint(opts.min_n, opts.max_n)
-
+def gen_iclause_pair(opts, n):
     solver = minisolvers.MinisatSolver()
     for i in range(n): solver.new_var(dvar=True)
 
@@ -62,8 +60,10 @@ def gen_iclause_pair(opts):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--out_dir', action='store', type=str, default='../data')
-    parser.add_argument('--n_pairs', action='store', type=int, default=1)
+    parser.add_argument('out_dir', action='store', type=str)
+    parser.add_argument('gen_log', action='store', type=str)
+
+    parser.add_argument('n_pairs', action='store', type=int)
 
     parser.add_argument('--min_n', action='store', dest='min_n', type=int, default=40)
     parser.add_argument('--max_n', action='store', dest='max_n', type=int, default=40)
@@ -80,13 +80,23 @@ if __name__ == "__main__":
     if opts.py_seed is not None: random.seed(opts.py_seed)
     if opts.np_seed is not None: np.random.seed(opts.np_seed)
 
-    for pair in range(opts.n_pairs):
-        if pair % opts.print_interval == 0: print("[%d]" % pair)
-        n_vars, iclauses, iclause_unsat, iclause_sat = gen_iclause_pair(opts)
-        out_filenames = mk_out_filenames(opts, n_vars, pair)
+    f = open(opts.gen_log, 'w')
 
-        iclauses.append(iclause_unsat)
-        write_dimacs_to(n_vars, iclauses, out_filenames[0])
+    n_cnt = opts.max_n - opts.min_n + 1
+    problem_per_n = opts.n_pairs * 1.0 / n_cnt
 
-        iclauses[-1] = iclause_sat
-        write_dimacs_to(n_vars, iclauses, out_filenames[1])
+    for n_var in range(opts.min_n, opts.max_n+1):
+        lower_bound = int((n_var - opts.min_n) * problem_per_n)
+        upper_bound = int((n_var - opts.min_n + 1) * problem_per_n)
+
+        for problems_idx in range(lower_bound, upper_bound):
+            if (problems_idx + lower_bound) % opts.print_inverval == 0: print("Processing # [%d] pairs..." % pair)
+            n_vars, iclauses, iclause_unsat, iclause_sat = gen_iclause_pair(opts, n_var)
+            out_filenames = mk_out_filenames(opts, n_vars, problems_idx)
+
+            iclauses.append(iclause_unsat)
+            write_dimacs_to(n_vars, iclauses, out_filenames[0])
+
+            iclauses[-1] = iclause_sat
+            write_dimacs_to(n_vars, iclauses, out_filenames[1])
+
