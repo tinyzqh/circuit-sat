@@ -90,7 +90,7 @@ if __name__ == "__main__":
         upper_bound = int((n_var - opts.min_n + 1) * problem_per_n)
 
         for problems_idx in range(lower_bound, upper_bound):
-            if (problems_idx + lower_bound) % opts.print_interval == 0: print("Processing # [%d] pairs..." % pair)
+            if (problems_idx + lower_bound) % opts.print_interval == 0: print("Processing # [%d] pairs..." % (problems_idx + lower_bound))
             n_vars, iclauses, iclause_unsat, iclause_sat = gen_iclause_pair(opts, n_var)
             out_filenames = mk_out_filenames(opts, n_vars, problems_idx)
 
