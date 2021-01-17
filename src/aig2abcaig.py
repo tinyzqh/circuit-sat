@@ -22,7 +22,7 @@ if __name__ == '__main__':
         aig_name = join(opts.aig_dir, filename)
         aig_abc_name = join(opts.abcaig_dir, splitext(filename)[0] + '_abc.aig')
         aig_abc_name_ascii = join(opts.abcaig_dir, splitext(filename)[0] + '_abc.aag')
-        subprocess.call(["./src/abc/abc", "-c", "r %s; b; ps; b; rw -l; rw -lz; b; rw -lz; b; ps; cec; w %s" % (aig_name, aig_abc_name)])
+        subprocess.call(["./src/abc/abc", "-c", "r %s; b; ps; b; rw -l; rw -lz; b; rw -lz; b; ps; cec; w %s" % aig_name, aig_abc_name])
         subprocess.call(["./src/aiger/aiger/aigtoaig", aig_abc_name, aig_abc_name_ascii])
 
 
