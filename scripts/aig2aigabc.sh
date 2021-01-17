@@ -5,7 +5,7 @@ DIR_LOG="log/aig2aig_sr3to10_train.log"
 rm -rf ${DIR_AIG_ABC}
 mkdir -p ${DIR_AIG_ABC}
 
-python src/dimacs2aig.py ${DIR_AIG} ${DIR_AIG_ABC} ${DIR_LOG}
+python src/aig2abcaig.py ${DIR_AIG} ${DIR_AIG_ABC} ${DIR_LOG}
 
 # validation\
 DIR_AIG="data/aig_raw/validation/sr10"
@@ -14,6 +14,6 @@ DIR_LOG="log/aig2aig_sr10_validation.log"
 rm -rf ${DIR_AIG_ABC}
 mkdir -p ${DIR_AIG_ABC}
 
-python src/dimacs2aig.py ${DIR_AIG} ${DIR_AIG_ABC} ${DIR_LOG}
+python src/aig2abcaig.py ${DIR_AIG} ${DIR_AIG_ABC} ${DIR_LOG}
 
 
