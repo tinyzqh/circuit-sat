@@ -20,7 +20,7 @@ The downloading and installation of these libraries are packed in [setup.sh](set
 ### Workflow
 * **Step1**: *PyMiniSovlers* to generate SAT and UNSAT pairs in *dimacs* format, which representing the propositional equations as CNF;
 * **Step2**: *CNFtoAIG* to convert the CNF circuits into AIG circuits;
-* **Step3**: *ABC* to optimize AIG and output optimized AIG, which is usually be done for synthesis. The optimization process follows the [demo example](https://github.com/berkeley-abc/abc/blob/master/src/demo.c): 1, (Blancing) `balance`; 2, (Synethesis) `balance; rewrite -l; rewrite -lz; balance; rewrite -lz; balance`; 3, (Verification) `ces`; 4, Save AIG `write *.aig`.
+* **Step3**: *ABC* to optimize AIG and output optimized AIG, which is usually be done for synthesis. The optimization process follows the [demo example](https://github.com/berkeley-abc/abc/blob/master/src/demo.c): 1, (Blancing) `balance`; 2, (Synethesis) `balance; rewrite -l; rewrite -lz; balance; rewrite -lz; balance`; 3, (Verification) `ces`; 4, Save AIG `write *.aig`. I assume the networks before and after synethesis are equivalent.
 * **Step4** (Optional): *aigtoaig* (utilities in *AIGER*) to convert binary AIGER format (\*.aig) into ASCII AIGER (\*.aag) format.
 * **Step5** (TO DO): Parse and construct graph representation in PyTorch using generate AIG file.
 
