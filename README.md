@@ -1,7 +1,7 @@
 # Circuit Representation Learning and Its Applications to VLSI Testing 
 This repo contains the initial codes and docs for circuit representation learning.
 
-So far, the idea is to transform Conjunctive Normal Form (CNF) into And-Inverter Graph (AIG), then using circuit synthesis tools (e.g., abc) to simplify AIG into the optimized AIG. 
+So far, the idea is to transform Conjunctive Normal Form (CNF) into And-Inverter Graph (AIG), then using circuit synthesis tools (*e.g.*, abc) to simplify AIG into the optimized AIG. 
 Then our graph neural networks are constructed based on extracted AIG structure. 
 In this way, we have two kinds of nodes: AND node and NOT (negative) node. Attention mechanism and heterogeneous graph embedding may be considered further.
 
@@ -40,7 +40,7 @@ I think using an adjacency matrix to represent the ordering of the nodes and the
 2. How to solve SAT problem in a sensible way?
 
 ### TO DO
-- [ ] Generate SR3to10 optimized AIG dataset.
+- [x] Generate SR3to10 optimized AIG dataset.
 - [ ] Try small-size problems, *i.e.*, r3to10 problems.
 
 
