@@ -17,7 +17,7 @@ if __name__ == '__main__':
     f = open(opts.gen_log, 'w')
 
 
-    for (i, filename) in enumerate(listdir(opts.dimacs_dir)):
+    for (i, filename) in enumerate(listdir(opts.aig_dir)):
         if i % opts.print_interval == 0: print("Processing # [%d] instances..." % i, file=f)
         aig_name = join(opts.aig_dir, filename)
         aig_abc_name = join(opts.abcaig_dir, splitext(filename)[0] + '_abc.aig')
