@@ -25,6 +25,7 @@ if __name__ == '__main__':
         print("\"r %s; b; ps; b; rw -l; rw -lz; b; rw -lz; b; ps; cec; w %s\"" % (aig_name, aig_abc_name))
 
         subprocess.call(["./src/abc/abc", "-c", "r %s; b; ps; b; rw -l; rw -lz; b; rw -lz; b; ps; cec; w %s" % (aig_name, aig_abc_name)])
+        exit()
         subprocess.call(["./src/aiger/aiger/aigtoaig", aig_abc_name, aig_abc_name_ascii])
 
 
