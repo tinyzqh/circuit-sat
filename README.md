@@ -22,7 +22,7 @@ The downloading and installation of these libraries are packed in [setup.sh](set
 * **Step2**: *CNFtoAIG* to convert the CNF circuits into AIG circuits;
 * **Step3**: *ABC* to optimize AIG and output optimized AIG, which is usually be done for synthesis. The optimization process follows the [demo example](https://github.com/berkeley-abc/abc/blob/master/src/demo.c): 1, (Balancing) `balance`; 2, (Synthesis) `balance; rewrite -l; rewrite -lz; balance; rewrite -lz; balance`; 3, (Verification) `ces`; 4, Save AIG `write *.aig`. I assume the networks before and after synthesis are equivalent.
 * **Step4** (Optional): *aigtoaig* (utilities in *AIGER*) to convert binary AIGER format (\*.aig) into ASCII AIGER (\*.aag) format.
-* **Step5** (TO DO): Parse and construct graph representation in PyTorch using generated AIG circuits.
+* **Step5** (TO DO): Parse and construct graph representation in [igraph](https://github.com/igraph/python-igraph) format with generated AIG circuits.
 
 ### Motivation
 If AIG representation works, the motivation behind it is quite similar to the one described in [Applying Logic Synthesis for Speeding Up SAT](https://www.researchgate.net/profile/Niklas_Een/publication/220944461_Applying_Logic_Synthesis_for_Speeding_Up_SAT/links/00b7d537cde06c8184000000.pdf). Also, the creator of *abc* also published a paper [Circuit-Based Intrinsic Methods to Detect Overfitting](http://proceedings.mlr.press/v119/chatterjee20a.html), which might be useful later.
@@ -34,6 +34,18 @@ I might first consider the intrinsic properties of [AIG](https://en.wikipedia.or
 Also, C-VAE, [D-VAE](https://github.com/muhanzhang/D-VAE), Attention Mechanism and Heterogeneous Graph Embedding can be referred.
 
 I think using an adjacency matrix to represent the ordering of the nodes and the connections between nodes would be a feasible solution.
+
+### igraph structure
+For AIG, the nodes can be categorized as the input node, internal AND nodes, the output node. The type values for each kind of nodes are as follows:
+* Input node: 0 (one single virtual starting node, be compatible with D-VAE);
+* Literal input node: 1 (input nodes, have a common predecessor Input node);
+* Internal AND nodes: 2;
+* Output node: 3 (connect to the last-level AND gate, but the edge might be Inverter).
+
+The type values for non-inverter and inverter edge:
+* non-inverter: 0;
+* inverter: 1.
+
 
 ### Problem
 1. Are Permutation invariance and negation invariance (mentioned in *NeuronSAT*) existing in AIG representation? 
