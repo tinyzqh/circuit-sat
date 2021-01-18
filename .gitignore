@@ -137,4 +137,5 @@ src/aiger
 *.dimacs
 *.aag
 *.aig
+*.pkl
 
