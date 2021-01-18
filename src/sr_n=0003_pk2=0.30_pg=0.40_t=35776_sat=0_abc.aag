@@ -1,0 +1,20 @@
+aag 10 3 0 1 7
+2
+4
+6
+20
+8 5 2
+10 7 5
+12 5 3
+14 13 9
+16 15 6
+18 11 8
+20 18 17
+i0 1
+i1 2
+i2 3
+o0 SATISFY
+c
+data/aig_raw/train/sr3to10/sr_n=0003_pk2=0.30_pg=0.40_t=35776_sat=0
+This file was written by ABC on Sun Jan 17 17:55:23 2021
+For information about AIGER format, refer to http://fmv.jku.at/aiger
