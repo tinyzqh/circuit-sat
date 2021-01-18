@@ -36,8 +36,10 @@ Also, C-VAE, [D-VAE](https://github.com/muhanzhang/D-VAE), Attention Mechanism a
 I think using an adjacency matrix to represent the ordering of the nodes and the connections between nodes would be a feasible solution.
 
 ### Problem
-1. Are Permutation invariance and negation invariance (mentioned in *NeuronSAT*) existing in AIG representation?
+1. Are Permutation invariance and negation invariance (mentioned in *NeuronSAT*) existing in AIG representation? 
+   > D-VAE has addressed this problem.
 2. How to solve SAT problem in a sensible way?
+3. For the circuit representation learning, should we start from the generative model (learning graph distribution *p(x)*), or start from a supervised task (solving SAT)? From my view, it would be much easier to start from a supervised task.
 
 ### TO DO
 - [x] Generate SR3to10 optimized AIG dataset.
