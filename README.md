@@ -37,7 +37,7 @@ I think using an adjacency matrix to represent the ordering of the nodes and the
 ### Motivation
 If AIG representation works, the motivation behind it is quite similar to the one described in [Applying Logic Synthesis for Speeding Up SAT](https://www.researchgate.net/profile/Niklas_Een/publication/220944461_Applying_Logic_Synthesis_for_Speeding_Up_SAT/links/00b7d537cde06c8184000000.pdf). Also, the creator of *abc* also published a paper [Circuit-Based Intrinsic Methods to Detect Overfitting](http://proceedings.mlr.press/v119/chatterjee20a.html), which might be useful later.
 
-### igraph structure
+### IGraph structure
 For AIG, the nodes can be categorized as the input node, internal AND nodes, the output node. The type values for each kind of nodes are as follows:
 * Input node: 0 (one single virtual starting node, be compatible with D-VAE);
 * Literal input node: 1 (input nodes, have a common predecessor Input node);
@@ -54,6 +54,8 @@ The functionals and information propagation mechanism of GNN. The implementation
 * Inverter and Un-Inverter edges shouldn't share the weights (GRU cells). Or should we add an edge vector to embed such information? For now, I used one-hot vectors.
 * Assume the present ordering of vertices is the topological ordering. Need to check later.
 * Bi-direction is used, following the convention of *NeuronSAT* and *Learning to Solve SAT*.
+
+### Training configuration
 
 
 ### Problem
