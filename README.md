@@ -45,12 +45,15 @@ For AIG, the nodes can be categorized as the input node, internal AND nodes, the
 * Output node: 3 (connect to the last-level AND gate, but the edge might be Inverter).
 
 The type values for non-inverter and inverter edge:
-* non-inverter: 0;
-* inverter: 1;
-* edge from the virtual starting node to literal input nodes: 2.
+* Non-inverter: 0;
+* Inverter: 1;
+* Edges from the virtual starting node to literal input nodes: 2.
 
 ### GNN design
-The functionals and information propagation mechanism of GNN.
+The functionals and information propagation mechanism of GNN. The implementation details are listed as follows.
+* Inverter and Un-Inverter edges shouldn't share the weights (GRU cells). Or should we add an edge vector to embed such information? For now, I used one-hot vectors to 
+* Assume the present ordering of vertices is the topological ordering. Need to check later.
+* Bi-direction is used, following the convention of *NeuronSAT* and *Learning to Solve SAT*.
 
 
 ### Problem

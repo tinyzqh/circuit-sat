@@ -139,3 +139,5 @@ src/aiger
 *.aig
 *.pkl
 
+*.DS_Store
+

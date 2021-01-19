@@ -28,15 +28,14 @@ def aig2igraph(folder_name, n_vtypes=4, n_etypes=3, print_interval=100):
         g, n = decode_aag_to_igraph(lines)
         y = 1 if 'sat=1' in filename else 0
 
-
         max_n = max(max_n, n)
         g_list.append((g, y))
 
     graph_args.num_vertex_type = n_vtypes
     graph_args.num_edge_type = n_etypes
     graph_args.max_n = max_n  # maximum number of nodes
-    graph_args.START_TYPE = 0  # predefined start vertex type
-    graph_args.END_TYPE = 3 # predefined end vertex type
+    # graph_args.START_TYPE = 0  # predefined start vertex type
+    # graph_args.END_TYPE = 3 # predefined end vertex type
     ng = len(g_list)
     print('# node types: %d' % graph_args.num_vertex_type)
     print('maximum # nodes: %d' % graph_args.max_n)
@@ -102,9 +101,11 @@ def decode_aag_to_igraph(lines):
         g.add_edge(input2_idx, output_idx, e_type=sign2_idx)
     
     g.add_edge(index_final_and, n_variables+1, e_type=sign_final)
+    # In D-VAE, the nodes 0, 1, ..., n+1 are in a topological order
+    # Is that true in AIG graph?
 
     print(g)
-
+    print(g.es[[g.get_eid(i, 4) for i in g.predecessors(4)]]['e_type'])
     return g, n_variables+2
 
 
