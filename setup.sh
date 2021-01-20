@@ -9,6 +9,9 @@ git clone https://github.com/berkeley-abc/abc.git
 cd abc
 make
 make libabc.a
+# copy the alias file to the root dir.
+# cp abc.rc ../../
+
 cd ../
 # Aiger
 mkdir aiger

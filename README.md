@@ -56,6 +56,8 @@ The functionals and information propagation mechanism of GNN. The implementation
 * Bi-direction is used, following the convention of *NeuronSAT* and *Learning to Solve SAT*.
 
 ### Training configuration
+* Haven't considered the multiple-round information propagations. Such implementation is not used in DVAE. I should turn to NeuronSAT for reference then.
+* 
 
 
 ### Problem

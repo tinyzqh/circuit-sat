@@ -12,10 +12,11 @@ import pdb
     DAG Variational Autoencoder (D-VAE).
     https://github.com/muhanzhang/D-VAE/blob/master/models.py
     I adopt the encoder part, and add two-layer MLP as the classifier.
+    For now, the edge information is encoded using one-hot vectors.
 '''
-class DVAE(nn.Module):
+class DVAEncoder(nn.Module):
     def __init__(self, max_n, nvt, net, hs=501, nz=56, bidirectional=True, vid=True):
-        super(DVAE, self).__init__()
+        super(DVAEncoder, self).__init__()
         self.max_n = max_n  # maximum number of vertices
         self.nvt = nvt  # number of vertex types
         self.net = net  # number of edge types

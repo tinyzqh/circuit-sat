@@ -357,15 +357,16 @@ def decode_from_latent_space(
 
 
 '''Network visualization'''
-def plot_DAG(g, res_dir, name, backbone=False, data_type='ENAS', pdf=False):
+def plot_DAG(g, res_dir, name, backbone=False, data_type='AIG', pdf=False):
     # backbone: puts all nodes in a straight line
     file_name = os.path.join(res_dir, name+'.png')
     if pdf:
         file_name = os.path.join(res_dir, name+'.pdf')
-    if data_type == 'ENAS':
+    if data_type == 'AIG':
         draw_network(g, file_name, backbone)
-    elif data_type == 'BN':
-        draw_BN(g, file_name)
+    else:
+        raise('The given data type (%s) is not supported' % data_type)
+        return False
     return file_name
 
 
