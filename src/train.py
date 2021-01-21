@@ -151,12 +151,11 @@ else:
 
 # plot sample train/test graphs
 if not os.path.exists(os.path.join(args.res_dir, 'train_graph_id0.pdf')) or args.reprocess:
-    if not args.keep_old:
-        for data in ['train_data', 'test_data']:
-            G = [g for g, y in eval(data)[:10]]
-            for i, g in enumerate(G):
-                name = '{}_graph_id{}'.format(data[:-5], i)
-                plot_DAG(g, args.res_dir, name, data_type=args.data_type)
+    for data in ['train_data', 'test_data']:
+        G = [g for g, y in eval(data)[:10]]
+        for i, g in enumerate(G):
+            name = '{}_graph_id{}'.format(data[:-5], i)
+            plot_DAG(g, args.res_dir, name, data_type=args.data_type)
 
 
 '''
