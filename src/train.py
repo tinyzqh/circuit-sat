@@ -251,7 +251,7 @@ min_loss_epoch = None
 loss_name = os.path.join(args.res_dir, 'train_loss.txt')
 loss_plot_name = os.path.join(args.res_dir, 'train_loss_plot.pdf')
 test_results_name = os.path.join(args.res_dir, 'test_results.txt')
-if os.path.exists(loss_name) and not args.keep_old:
+if os.path.exists(loss_name):
     os.remove(loss_name)
 
 # if args.only_test:
