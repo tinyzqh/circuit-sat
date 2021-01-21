@@ -29,22 +29,16 @@ parser = argparse.ArgumentParser(description='Train GNN (The encoder part from D
 # general settings
 parser.add_argument('--data-type', default='AIG', choices=['AIG'],
                     help='AIG format')
-parser.add_argument('--igraph_dir', default='data', type=str)
-parser.add_argument('--data-name', default='sr3to10', help='graph dataset name')
-parser.add_argument('--nvt', type=int, default=3, help='number of different node types, \
-                    3 for AIG setting')
+parser.add_argument('--igraph-dir', default='data', type=str)
+parser.add_argument('--data-name', default='sr10', help='graph dataset name')
+parser.add_argument('--nvt', type=int, default=4, help='number of different node types, \
+                    4 for AIG setting')
 parser.add_argument('--save-appendix', default='', 
                     help='what to append to data-name as save-name for results')
 parser.add_argument('--save-interval', type=int, default=100, metavar='N',
                     help='how many epochs to wait each time to save model states')
-# parser.add_argument('--sample-number', type=int, default=20, metavar='N',
-#                     help='how many samples to generate each time')
 parser.add_argument('--no-test', action='store_true', default=False,
-                    help='if True, merge test with train, i.e., no held-out set')
-# parser.add_argument('--reprocess', action='store_true', default=False,
-#                     help='if True, reprocess data instead of using prestored .pkl data')
-# parser.add_argument('--keep-old', action='store_true', default=False,
-#                     help='if True, do not remove any old data in the result folder')
+                    help='if True, only training.')
 parser.add_argument('--only-test', action='store_true', default=False,
                     help='if True, perform some experiments without training the model')
 parser.add_argument('--small-train', action='store_true', default=False,
@@ -98,7 +92,8 @@ args.res_dir = 'results/{}{}'.format(args.data_name, args.save_appendix)
 if not os.path.exists(args.res_dir):
     os.makedirs(args.res_dir) 
 
-train_pkl = os.path.join(args.igraph_dir, args.data_name + 'train.pkl')
+# Only use SR10 validation for now.
+train_pkl = os.path.join(args.igraph_dir, args.data_name + 'validation.pkl')
 validation_pkl = os.path.join(args.igraph_dir, args.data_name + 'validation.pkl')
 
 
@@ -118,8 +113,8 @@ else:
 
 
 # construct train data
-if args.no_test:
-    train_data = train_data + test_data
+# if args.no_test:
+#     train_data = train_data + test_data
 
 if args.small_train:
     train_data = train_data[:100]
@@ -299,12 +294,14 @@ for epoch in range(start_epoch + 1, args.epochs + 1):
         plt.ylabel('Training')
         plt.legend()
         plt.savefig(loss_plot_name)
-
-'''Testing begins here'''
-test_loss, test_acc = test()
-
-with open(test_results_name, 'a') as result_file:
-    result_file.write("Epoch {} Test recon loss: {} | Acc: {:.4f}".format(
+    
+    if not args.no_test:
+        test_loss, test_acc = test()
+        with open(test_results_name, 'a') as result_file:
+            result_file.write("Epoch {} Test recon loss: {} | Acc: {:.4f}".format(
             epoch, test_loss, test_acc))
+
+
+
 
 pdb.set_trace()
