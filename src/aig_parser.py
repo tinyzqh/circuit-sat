@@ -22,6 +22,7 @@ def aig2igraph(folder_name, n_vtypes=4, n_etypes=3, print_interval=100):
     max_n = 0 # maximum number of nodes
 
     for (i, filename) in enumerate([filename for filename in listdir(folder_name) if filename.endswith('.aag')]):
+        if i % print_interval == 0: print("Processing # [%d] instances..." % i)
         aag_path = join(folder_name, filename)
         with open(aag_path, 'r') as f:
             lines = f.readlines()
