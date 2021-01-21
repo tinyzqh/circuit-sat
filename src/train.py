@@ -188,7 +188,7 @@ def train(epoch):
             loss.backward()
             optimizer.step()
 
-            predicted = float(binary_logit > 0)
+            predicted = (binary_logit > 0).to(float)
             correct += y_batch.eq(predicted).sum().item()  
             train_loss += float(loss)
 
@@ -226,7 +226,7 @@ def test():
             g = model._collate_fn(g_batch)
             g_embedding = model.encode(g_batch)
             binary_logit = model.classifier(g_embedding)
-            predicted = float(binary_logit > 0)
+            predicted = (binary_logit > 0).to(float)
             loss = model.loss(binary_logit, y_batch)
             correct += y_batch.eq(predicted).sum().item()
             total += y_batch.size(0)
