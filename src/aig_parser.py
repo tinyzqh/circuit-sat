@@ -73,7 +73,14 @@ def decode_aag_to_igraph(lines):
         assert int(literal[0]) == 2 * (i + 1), 'The value of a input literal should be the index of variables mutiplying by two.'
 
     literal = lines[1+n_inputs].strip().split(" ")[0]
-    assert int(literal) == (n_variables * 2) or int(literal) == (n_variables * 2) + 1, 'The value of the output literal shoud be (n_variables * 2)'
+    if int(literal) == (n_variables * 2) or int(literal) == (n_variables * 2) + 1:
+        pass
+    else:
+        print(lines)
+        print(literal)
+        raise("The value of the output literal shoud be (n_variables * 2)")
+
+    # assert int(literal) == (n_variables * 2) or int(literal) == (n_variables * 2) + 1, 'The value of the output literal shoud be (n_variables * 2)'
     sign_final = int(literal) % 2
     index_final_and = int(literal) // 2
 
@@ -104,8 +111,8 @@ def decode_aag_to_igraph(lines):
     # In D-VAE, the nodes 0, 1, ..., n+1 are in a topological order
     # Is that true in AIG graph?
 
-    print(g)
-    print(g.es[[g.get_eid(i, 4) for i in g.predecessors(4)]]['e_type'])
+    # print(g)
+    # print(g.es[[g.get_eid(i, 4) f or i in g.predecessors(4)]]['e_type'])
     return g, n_variables+2
 
 
