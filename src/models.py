@@ -144,7 +144,7 @@ class DVAEncoder(nn.Module):
             H_name = 'H_backward'  # name of the hidden states attribute
             H_pred = [[g.vs[x][H_name] for x in g.successors(v)] for g in G]
             if self.vid:
-                vids = [self._one_hot(g.es[[g.get_eid(i, v) for i in g.successors(v)]]['e_type'], self.net) for g in G]
+                vids = [self._one_hot(g.es[[g.get_eid(v, i) for i in g.successors(v)]]['e_type'], self.net) for g in G]
             gate, mapper = self.gate_backward, self.mapper_backward
         else:
             H_name = 'H_forward'  # name of the hidden states attribute
