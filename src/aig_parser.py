@@ -125,8 +125,10 @@ if __name__ == '__main__':
     opts = parser.parse_args()
 
     g_list, graph_args = aig2igraph(opts.abcaig_dir)
+    print('AIG graph data size: %d' % len(g_list))
 
     pkl_name = join(opts.igraph_dir, opts.dataset_name + '.pkl')
+    print('Saving Graph dataset to %s' % pkl_name)
     with open(pkl_name, 'wb') as f:
         pickle.dump((g_list, graph_args), f)
     
