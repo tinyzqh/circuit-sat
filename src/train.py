@@ -190,6 +190,7 @@ def train(epoch):
 
             predicted = (binary_logit > 0).to(float)
             correct += y_batch.eq(predicted).sum().item()  
+            total += len(g_batch)
             train_loss += float(loss)
 
             pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%% (%d/%d)' % (
@@ -229,7 +230,7 @@ def test():
             predicted = (binary_logit > 0).to(float)
             loss = model.loss(binary_logit, y_batch)
             correct += y_batch.eq(predicted).sum().item()
-            total += y_batch.size(0)
+            total += len(g_batch)
             test_loss += loss.item()
 
             pbar.set_description('loss: {:.4f}, Acc: %.3f%% (%d/%d)'.format(pred_loss.item()/len(g_batch), 100.*correct/total, correct, total))
