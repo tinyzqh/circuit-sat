@@ -378,7 +378,7 @@ def draw_network(g, path, backbone=False):
         graph.draw(path)
         return
     for idx in range(g.vcount()):
-        add_node(graph, idx, g.vs[idx]['type'])
+        add_node(graph, idx, g.vs[idx]['v_type'])
     for idx in range(g.vcount()):
         for node in g.get_adjlist(igraph.IN)[idx]:
             if node == idx-1 and backbone:
