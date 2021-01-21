@@ -129,7 +129,8 @@ model = eval(args.model)(
         graph_train_args.num_vertex_type, 
         graph_train_args.num_edge_type,
         hs=args.hs, 
-        nz=args.nz, 
+        nz=args.nz,
+        n_rounds=args.n_rounds,
         bidirectional=args.bidirectional
         )
 # optimizer and scheduler
