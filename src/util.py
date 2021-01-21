@@ -384,7 +384,7 @@ def draw_network(g, path, backbone=False):
             if node == idx-1 and backbone:
                 graph.add_edge(node, idx, weight=1)
             else:
-                graph.add_edge(node, idx, label=g.es[g.get_eid(node, v)]['e_type'], weight=0)
+                graph.add_edge(node, idx, label=g.es[g.get_eid(node, idx)]['e_type'], weight=0)
     graph.layout(prog='dot')
     graph.draw(path)
 
