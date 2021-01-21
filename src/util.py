@@ -384,7 +384,7 @@ def draw_network(g, path, backbone=False):
             if node == idx-1 and backbone:
                 graph.add_edge(node, idx, weight=1)
             else:
-                graph.add_edge(node, idx, weight=0)
+                graph.add_edge(node, idx, label=g.es[g.get_eid(node, v)]['e_type'], weight=0)
     graph.layout(prog='dot')
     graph.draw(path)
 
@@ -394,26 +394,14 @@ def add_node(graph, node_id, label, shape='box', style='filled'):
         label = 'input'
         color = 'skyblue'
     elif label == 1:
-        label = 'output'
+        label = 'Literal'
         color = 'pink'
     elif label == 2:
-        label = 'conv3'
+        label = 'AND'
         color = 'yellow'
     elif label == 3:
-        label = 'sep3'
+        label = 'Output'
         color = 'orange'
-    elif label == 4:
-        label = 'conv5'
-        color = 'greenyellow'
-    elif label == 5:
-        label = 'sep5'
-        color = 'seagreen3'
-    elif label == 6:
-        label = 'avg3'
-        color = 'azure'
-    elif label == 7:
-        label = 'max3'
-        color = 'beige'
     else:
         label = ''
         color = 'aliceblue'
