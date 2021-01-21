@@ -184,14 +184,16 @@ def train(epoch):
             binary_logit = model.classifier(g_embedding)
             y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
             loss= model.loss(binary_logit,y_batch)
+            
+            loss.backward()
+            optimizer.step()
+
+            predicted = float(binary_logit > 0)
+            correct += y_batch.eq(predicted).sum().item()  
+            train_loss += float(loss)
+
             pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%% (%d/%d)' % (
                              epoch, loss.item()/len(g_batch), 100.*correct/total, correct, total))
-            loss.backward()
-            predicted = float(binary_logit > 0)
-            correct += y_batch.eq(predicted).sum().item()
-            
-            train_loss += float(loss)
-            optimizer.step()
             g_batch = []
             y_batch = []
 
@@ -228,8 +230,9 @@ def test():
             loss = model.loss(binary_logit, y_batch)
             correct += y_batch.eq(predicted).sum().item()
             total += y_batch.size(0)
-            pbar.set_description('loss: {:.4f}, Acc: %.3f%% (%d/%d)'.format(pred_loss.item()/len(g_batch), 100.*correct/total, correct, total))
             test_loss += loss.item()
+
+            pbar.set_description('loss: {:.4f}, Acc: %.3f%% (%d/%d)'.format(pred_loss.item()/len(g_batch), 100.*correct/total, correct, total))
 
             g_batch = []
             y_batch = []
