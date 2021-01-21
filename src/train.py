@@ -123,9 +123,9 @@ if args.small_train:
 '''Prepare the model'''
 # model
 model = eval(args.model)(
-        graph_args.max_n, 
-        graph_args.num_vertex_type, 
-        graph_args.num_edge_type,
+        graph_train_args.max_n, 
+        graph_train_args.num_vertex_type, 
+        graph_train_args.num_edge_type,
         hs=args.hs, 
         nz=args.nz, 
         bidirectional=args.bidirectional
