@@ -274,7 +274,7 @@ for epoch in range(start_epoch + 1, args.epochs + 1):
     train_loss, train_acc = train(epoch)
     pred_loss = 0.0
     with open(loss_name, 'a') as loss_file:
-        loss_file.write("{:.2f} {:.2f} {:.2f} {:.2f}\n".format(
+        loss_file.write("{:.2f} {:.2f} \n".format(
             train_loss, 
             train_acc
             ))
