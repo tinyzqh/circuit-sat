@@ -180,7 +180,8 @@ def train(epoch):
         if len(g_batch) == args.batch_size or i == len(train_data) - 1:
             optimizer.zero_grad()
             g_batch = model._collate_fn(g_batch)
-            binary_logit = model.encode(g_batch)
+            g_embedding = model.encode(g_batch)
+            binary_logit = model.classifer(g_embedding)
             y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
             loss= model.loss(binary_logit,y_batch)
             pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%% (%d/%d)' % (
@@ -221,7 +222,8 @@ def test():
         if len(g_batch) == args.infer_batch_size or i == len(test_data) - 1:
             y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
             g = model._collate_fn(g_batch)
-            binary_logit = model.encode(g)
+            g_embedding = model.encode(g_batch)
+            binary_logit = model.classifer(g_embedding)
             predicted = float(binary_logit > 0)
             loss = model.loss(binary_logit, y_batch)
             correct += y_batch.eq(predicted).sum().item()
