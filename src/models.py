@@ -138,7 +138,7 @@ class DVAEncoder(nn.Module):
         if H is not None:
             idx = [i for i, g in enumerate(G) if g.vcount() > v]
             H = H[idx]
-        v_types = [g.vs[v]['type'] for g in G]
+        v_types = [g.vs[v]['v_type'] for g in G]
         X = self._one_hot(v_types, self.nvt)
         if reverse:
             H_name = 'H_backward'  # name of the hidden states attribute
