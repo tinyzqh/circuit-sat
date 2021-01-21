@@ -55,6 +55,8 @@ parser.add_argument('--nz', type=int, default=56, metavar='N',
                     help='number of dimensions of latent vectors z')
 parser.add_argument('--bidirectional', action='store_true', default=False,
                     help='whether to use bidirectional encoding')
+parser.add_argument('--n_rounds', type=int, defaul=26, metavar='N',
+                    help='The number of rounds for information propagation.')
 # parser.add_argument('--predictor', action='store_true', default=False,
 #                     help='whether to train a performance predictor from latent\
 #                     encodings and a VAE at the same time')

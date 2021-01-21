@@ -68,6 +68,7 @@ The functionals and information propagation mechanism of GNN. The implementation
    > D-VAE has addressed this problem.
 2. How to solve SAT problem in a sensible way?
 3. For the circuit representation learning, should we start from the generative model (learning graph distribution *p(x)*), or start from a supervised task (solving SAT)? From my view, it would be much easier to start from a supervised task.
+4. The size of obtained AIG seems to be quite complicate.
 
 ### TO DO
 - [x] Generate SR3to10 optimized AIG dataset.

@@ -15,7 +15,7 @@ import pdb
     For now, the edge information is encoded using one-hot vectors.
 '''
 class DVAEncoder(nn.Module):
-    def __init__(self, max_n, nvt, net, hs=501, nz=56, bidirectional=True, vid=True):
+    def __init__(self, max_n, nvt, net, hs=501, nz=56, n_rounds=26, bidirectional=True, vid=True):
         super(DVAEncoder, self).__init__()
         self.max_n = max_n  # maximum number of vertices
         self.nvt = nvt  # number of vertex types
@@ -24,6 +24,7 @@ class DVAEncoder(nn.Module):
         # self.END_TYPE = END_TYPE
         self.hs = hs  # hidden state size of each vertex
         self.nz = nz  # size of latent representation z
+        self.n_rounds = n_rounds
         self.gs = hs  # size of graph state
         self.bidir = bidirectional  # whether to use bidirectional encoding
         self.vid = vid  # ML: Change to flag of including one-hot edge vector
@@ -219,11 +220,18 @@ class DVAEncoder(nn.Module):
         # encode graphs G into latent vectors
         if type(G) != list:
             G = [G]
-        self._propagate_from(G, 0, self.grue_forward, H0=self._get_zero_hidden(len(G)),
+        H_vf = self._propagate_from(G, 0, self.grue_forward, H0=self._get_zero_hidden(len(G)),
                              reverse=False)
         if self.bidir:
-            self._propagate_from(G, self.max_n-1, self.grue_backward, 
+            H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
                                  H0=self._get_zero_hidden(len(G)), reverse=True)
+        for _ in range(self.n_rounds):
+            H_vf = elf._propagate_from(G, 0, self.grue_forward, H0=self.H_vf,
+                             reverse=False)
+            if self.bidir:
+                H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
+                                 H0=H_vb, reverse=True)
+
         Hg = self._get_graph_state(G)
         # mu, logvar = self.fc1(Hg), self.fc2(Hg) 
         return Hg
