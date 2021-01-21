@@ -25,6 +25,9 @@ The downloading and installation of these libraries are packed in [setup.sh](set
 * **Step5**: Parse and construct graphs in [igraph](https://github.com/igraph/python-igraph) format with generated AIG circuits.
 <!-- * **Step6** (TO DO): Cirtui representation learning. -->
 
+The optimiz AIG looks like as follow:
+![optimized AIG](figs/train_graph_id0.png)
+
 
 ## Graph Neural Networks
 The exact structure/representation of GNNs for AIG graphs is still to be determined.
