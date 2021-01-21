@@ -26,6 +26,8 @@ def aig2igraph(folder_name, n_vtypes=4, n_etypes=3, print_interval=100):
         with open(aag_path, 'r') as f:
             lines = f.readlines()
         g, n = decode_aag_to_igraph(lines)
+        if g == None:
+            continue
         y = 1 if 'sat=1' in filename else 0
 
         max_n = max(max_n, n)
@@ -55,6 +57,8 @@ def decode_aag_to_igraph(lines):
     n_and = eval(header[5])
     assert n_outputs == 1, 'The AIG has multiple outputs.'
     assert n_variables == (n_inputs + n_and), 'There are unused AND gates.'
+    if n_variables == n_inputs:
+        return None, None
     # Construct AIG graph
     g.add_vertices(n_variables + 2)
     g.vs[0]['v_type'] = 0   # input node (a virtual starting node connecting to all of input literals)
@@ -73,14 +77,7 @@ def decode_aag_to_igraph(lines):
         assert int(literal[0]) == 2 * (i + 1), 'The value of a input literal should be the index of variables mutiplying by two.'
 
     literal = lines[1+n_inputs].strip().split(" ")[0]
-    if int(literal) == (n_variables * 2) or int(literal) == (n_variables * 2) + 1:
-        pass
-    else:
-        print(lines)
-        print(literal)
-        raise("The value of the output literal shoud be (n_variables * 2)")
-
-    # assert int(literal) == (n_variables * 2) or int(literal) == (n_variables * 2) + 1, 'The value of the output literal shoud be (n_variables * 2)'
+    assert int(literal) == (n_variables * 2) or int(literal) == (n_variables * 2) + 1, 'The value of the output literal shoud be (n_variables * 2)'
     sign_final = int(literal) % 2
     index_final_and = int(literal) // 2
 
