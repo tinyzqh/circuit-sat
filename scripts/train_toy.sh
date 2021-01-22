@@ -1,7 +1,7 @@
 # The training script for tiny dataset: SR10/SR3 actually.
 python src/train.py --data-name  AIG  \
                 --igraph-dir data \
-                --data-name sr10 \
+                --data-name sr3 \
                 --nvt 4 \
                 --save-interval 100 \
                 --no-test \

@@ -95,7 +95,7 @@ if not os.path.exists(args.res_dir):
     os.makedirs(args.res_dir) 
 
 # Only use SR10 validation for now.
-train_pkl = os.path.join(args.igraph_dir, args.data_name + '_validation.pkl')
+train_pkl = os.path.join(args.igraph_dir, args.data_name + '_train.pkl')
 validation_pkl = os.path.join(args.igraph_dir, args.data_name + '_validation.pkl')
 
 
