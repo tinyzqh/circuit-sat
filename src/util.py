@@ -391,7 +391,7 @@ def draw_network(g, path, backbone=False):
 
 def add_node(graph, node_id, label, shape='box', style='filled'):
     if label == 0:  
-        label = 'input'
+        label = 'Input'
         color = 'skyblue'
     elif label == 1:
         label = 'Literal'

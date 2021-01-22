@@ -7,6 +7,8 @@ In this way, we have two kinds of nodes: AND node and NOT (negative) node. Atten
 
 For the first phase, let's just try whether building an AIG graph and considering in the circuit structure will help solving SAT or not!
 
+After doing survey on the deep learning on EDA, I might just focus on proposing a better GNN for SAT solving. At least the idea of applying GNN to EDA/VLSI testing has been used.
+
 ## CNF->AIG->Optimzed AIG
 ### Libraries
 The libraries we need:
