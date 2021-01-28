@@ -47,11 +47,8 @@ class DVAEncoder(nn.Module):
         # 1. classifer. ML
         self.classifier = nn.Sequential(
                 # nn.Linear(self.gs, self.gs * 2),
-                # nn.ReLU(),
                 # nn.Linear(self.gs * 2, 1)
-                nn.Linear(self.gs, self.gs * 2),
-                nn.ReLU(),
-                nn.Linear(self.gs * 2, 1)
+                nn.Linear(self.gs, 1)
                 )
         # self.fc1 = nn.Linear(self.gs, nz)  # latent mean
         # self.fc2 = nn.Linear(self.gs, nz)  # latent logvar
