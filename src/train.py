@@ -167,6 +167,7 @@ def train(epoch):
             print(predicted)
             print(y_batch)
             print(TP, TN, FN, FP, TOT)
+            exit()
 
             train_loss += float(loss)
             # The calculation of True positive, etc seems wrong...
