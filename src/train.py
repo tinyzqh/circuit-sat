@@ -24,7 +24,7 @@ from util import *
 from models import DVAEncoder
 # from bayesian_optimization.evaluate_BN import Eval_BN
 
-from config import parsers
+from config import parser
 
 
 
@@ -40,8 +40,8 @@ np.random.seed(args.seed)
 random.seed(args.seed)
 
 
-log_file = open(os.path.join(args.log_dir, args.task_name + '.log'), 'a+')
-detail_log_file = open(os.path.join(args.log_dir, task_name + '_detail.log'), 'a+')
+log_file = open(os.path.join(args.log_dir, args.data_name + '.log'), 'a+')
+detail_log_file = open(os.path.join(args.log_dir, args.data_name + '_detail.log'), 'a+')
 
 print(args, file=log_file, flush=True)
 print('Using device:', device, file=log_file, flush=True)
@@ -53,8 +53,8 @@ if not os.path.exists(args.res_dir):
 
 print('Preparing data...', file=log_file, flush=True)
 
-train_pkl = os.path.join(args.igraph_dir, args.data_name + '_train.pkl')
-validation_pkl = os.path.join(args.igraph_dir, args.data_name + '_validation.pkl')
+train_pkl = os.path.join(args.data_dir, args.data_name + '_train.pkl')
+validation_pkl = os.path.join(args.data_dir, args.data_name + '_validation.pkl')
 
 
 # Load pre-stored pickle data
@@ -74,11 +74,11 @@ else:
 print('# of training samples: ', len(train_data), file=log_file, flush=True)
 SAT=0
 total = 0
-for (graph, y) in train:
-    if y == 1: SAT+=1
-    total += 1
-print('SAT percentage {} / {} {}' % SAT/total, SAT, total)
-exit()
+# for (graph, y) in train_data:
+#     if y == 1: SAT+=1
+#     total += 1
+# print('SAT percentage %.2f / %.2f %.2f' % (SAT/total, SAT, total))
+#  exit()
 
 print('# of validation samples: ', len(test_data), file=log_file, flush=True)
 
@@ -168,12 +168,12 @@ def train(epoch):
             train_loss += float(loss)
             # The calculation of True positive, etc seems wrong...
             pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
-                             epoch, loss.item()/len(g_batch), (TP+TN)/TOT, TP/TOT, TN/TOT, FN/TOT, FP/TOT)
+                             epoch, loss.item()/len(g_batch), (TP+TN)/TOT, TP/TOT, TN/TOT, FN/TOT, FP/TOT))
             g_batch = []
             y_batch = []
 
     train_loss /= len(train_data)
-    acc = (TP+TN)/TOT)
+    acc = (TP+TN)/TOT
 
     print('====> Epoch: {} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
           epoch, train_loss, acc))
