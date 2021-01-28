@@ -164,20 +164,16 @@ def train(epoch):
             FN += (predicted.eq(0) & y_batch.eq(1)).sum().item()
             FP += (predicted.eq(1) & y_batch.eq(0)).sum().item()
             TOT = TP + TN + FN + FP
-            print(predicted)
-            print(y_batch)
-            print(TP, TN, FN, FP, TOT)
-            exit()
-
+            
             train_loss += float(loss)
             # The calculation of True positive, etc seems wrong...
             pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
-                             epoch, loss.item()/len(g_batch), (TP+TN)/TOT, TP/TOT, TN/TOT, FN/TOT, FP/TOT))
+                             epoch, loss.item()/len(g_batch), (TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
             g_batch = []
             y_batch = []
 
     train_loss /= len(train_data)
-    acc = (TP+TN)/TOT
+    acc = (TP + TN) * 1.0 / TOT
 
     print('====> Epoch: {} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
           epoch, train_loss, acc))
