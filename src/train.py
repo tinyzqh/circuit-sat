@@ -71,7 +71,7 @@ if os.path.isfile(validation_pkl):
 else:
     raise BaseException('Validation data no found..')
 
-print('# of training samples: ', len(train_data), file=log_file, flush=True)
+print('# of training samples: ', len(train_data))#, file=log_file, flush=True)
 SAT=0
 total = 0
 # for (graph, y) in train_data:
@@ -80,7 +80,7 @@ total = 0
 # print('SAT percentage %.2f / %.2f %.2f' % (SAT/total, SAT, total))
 #  exit()
 
-print('# of validation samples: ', len(test_data), file=log_file, flush=True)
+print('# of validation samples: ', len(test_data))#, file=log_file, flush=True)
 
 
 
@@ -164,6 +164,9 @@ def train(epoch):
             FN += (predicted.eq(0) & y_batch.eq(1)).sum().item()
             FP += (predicted.eq(1) & y_batch.eq(0)).sum().item()
             TOT = TP + TN + FN + FP
+            print(predicted)
+            print(y_batch)
+            print(TP, TN, FN, FP, TOT)
 
             train_loss += float(loss)
             # The calculation of True positive, etc seems wrong...
