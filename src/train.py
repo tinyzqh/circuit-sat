@@ -72,8 +72,8 @@ else:
     raise BaseException('Validation data no found..')
 
 print('# of training samples: ', len(train_data))#, file=log_file, flush=True)
-SAT=0
-total = 0
+# SAT=0
+# total = 0
 # for (graph, y) in train_data:
 #     if y == 1: SAT+=1
 #     total += 1
@@ -164,7 +164,7 @@ def train(epoch):
             FN += (predicted.eq(0) & y_batch.eq(1)).sum().item()
             FP += (predicted.eq(1) & y_batch.eq(0)).sum().item()
             TOT = TP + TN + FN + FP
-            
+
             train_loss += float(loss)
             # The calculation of True positive, etc seems wrong...
             pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (

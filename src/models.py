@@ -50,22 +50,6 @@ class DVAEncoder(nn.Module):
                 # nn.Linear(self.gs * 2, 1)
                 nn.Linear(self.gs, 1)
                 )
-        # self.fc1 = nn.Linear(self.gs, nz)  # latent mean
-        # self.fc2 = nn.Linear(self.gs, nz)  # latent logvar
-            
-        # # 1. decoding-related
-        # self.grud = nn.GRUCell(nvt, hs)  # decoder GRU
-        # self.fc3 = nn.Linear(nz, hs)  # from latent z to initial hidden state h0
-        # self.add_vertex = nn.Sequential(
-        #         nn.Linear(hs, hs * 2),
-        #         nn.ReLU(),
-        #         nn.Linear(hs * 2, nvt)
-        #         )  # which type of new vertex to add f(h0, hg)
-        # self.add_edge = nn.Sequential(
-        #         nn.Linear(hs * 2, hs * 4), 
-        #         nn.ReLU(), 
-        #         nn.Linear(hs * 4, 1)
-        #         )  # whether to add edge between v_i and v_new, f(hvi, hnew)
 
         # 2. gate-related
         self.gate_forward = nn.Sequential(
@@ -105,7 +89,7 @@ class DVAEncoder(nn.Module):
         return self.device
     
     def _get_zeros(self, n, length):
-        return torch.zeros(n, length).to(self.get_device()) # get a zero hidden state
+        return torch.ones(n, length).to(self.get_device()) # get a zero hidden state
 
     def _get_zero_hidden(self, n=1):
         return self._get_zeros(n, self.hs) # get a zero hidden state
