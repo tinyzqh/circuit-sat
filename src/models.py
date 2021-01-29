@@ -89,7 +89,7 @@ class DVAEncoder(nn.Module):
         return self.device
     
     def _get_zeros(self, n, length):
-        return torch.ones(n, length).to(self.get_device()) # get a zero hidden state
+        return torch.zeros(n, length).to(self.get_device()) # get a zero hidden state
 
     def _get_zero_hidden(self, n=1):
         return self._get_zeros(n, self.hs) # get a zero hidden state
