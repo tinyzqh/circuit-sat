@@ -210,9 +210,6 @@ class DVAEncoder(nn.Module):
                                  reverse=True)
 
         Hg = self._get_graph_state(G)
-        print(Hg.size())
-        print(Hg[0])
-        exit()
         return Hg
 
 
