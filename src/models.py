@@ -23,9 +23,9 @@ class DVAEncoder(nn.Module):
         # self.START_TYPE = START_TYPE
         # self.END_TYPE = END_TYPE
         self.hs = hs  # hidden state size of each vertex
-        self.nz = nz  # size of latent representation z
+        # self.nz = nz  # size of latent representation z
         self.n_rounds = n_rounds
-        self.gs = hs  # size of graph state
+        self.gs = nz  # size of graph state
         self.bidir = bidirectional  # whether to use bidirectional encoding
         self.vid = vid  # ML: Change to flag of including one-hot edge vector
         self.device = None
