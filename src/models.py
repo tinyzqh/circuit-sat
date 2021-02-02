@@ -133,16 +133,16 @@ class DVAEncoder(nn.Module):
             H_pred = [[g.vs[x][H_name] for x in g.predecessors(v)] for g in G]
             if self.vid:
                 vids = [self._one_hot(g.es[[g.get_eid(i, v) for i in g.predecessors(v)]]['e_type'], self.net) for g in G]
-                if v == 4:
-                    print(vids)
-                    print(len(vids))
+                # if v == 4:
+                #     print(vids)
+                #     print(len(vids))
             gate, mapper = self.gate_forward, self.mapper_forward
         if self.vid:
             H_pred = [[torch.cat([x[i], y[i:i+1]], 1) for i in range(len(x))] for x, y in zip(H_pred, vids)]
-            if v == 4:
-                print(H_pred)
-                print(len(H_pred))
-                exit()
+            # if v == 4:
+            #     print(H_pred)
+            #     print(len(H_pred))
+            #     exit()
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
             max_n_pred = max([len(x) for x in H_pred])  # maximum number of predecessors
@@ -155,6 +155,9 @@ class DVAEncoder(nn.Module):
                 H_pred = torch.cat(H_pred, 0)  # batch * max_n_pred * vs
                 H = self._gated(H_pred, gate, mapper).sum(1)  # batch * hs
         Hv = propagator(X, H)
+        if v == 4:
+            print(Hv.size())
+            exit()
         for i, g in enumerate(G):
             g.vs[v][H_name] = Hv[i:i+1]
         return Hv
@@ -171,10 +174,6 @@ class DVAEncoder(nn.Module):
             self._propagate_to(G, v_, propagator, reverse=reverse)
         return Hv
 
-    def _update_v(self, G, v, H0=None):
-        # perform a forward propagation step at v when decoding to update v's state
-        self._propagate_to(G, v, self.grud, H0, reverse=False)
-        return
     
     def _get_vertex_state(self, G, v):
         # get the vertex states at v
@@ -214,11 +213,11 @@ class DVAEncoder(nn.Module):
             H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
                                  H0=self._get_zero_hidden(len(G)), reverse=True)
         for _ in range(self.n_rounds):
-            H_vf = self._propagate_from(G, 0, self.grue_forward, H0=H_vf,
+            self._propagate_from(G, 0, self.grue_forward,
                              reverse=False)
             if self.bidir:
-                H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
-                                 H0=H_vb, reverse=True)
+                self._propagate_from(G, self.max_n-1, self.grue_backward, 
+                                 reverse=True)
 
         Hg = self._get_graph_state(G)
         # mu, logvar = self.fc1(Hg), self.fc2(Hg) 
