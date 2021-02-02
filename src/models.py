@@ -148,10 +148,6 @@ class DVAEncoder(nn.Module):
                 H_pred = torch.cat(H_pred, 0)  # batch * max_n_pred * vs
                 H = self._gated(H_pred, gate, mapper).sum(1)  # batch * hs
         Hv = propagator(X, H)
-        if v == 4:
-            print(len(Hv))
-            print(Hv.size())
-            exit()
         for i, g in enumerate(G):
             g.vs[v][H_name] = Hv[i:i+1]
         return Hv
