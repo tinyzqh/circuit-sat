@@ -65,7 +65,7 @@ The functionals and information propagation mechanism of GNN. The implementation
 ### Training configuration
 * ~~Haven't considered the multiple-round information propagations. Such implementation is not used in DVAE. I should turn to NeuronSAT for reference then.~~
 * The network is not optimized for the objective. I should check the NN functionality as soon as possible.
-* 
+
 
 
 ### Problem

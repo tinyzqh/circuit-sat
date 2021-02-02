@@ -150,8 +150,7 @@ def train(epoch):
         if len(g_batch) == args.batch_size or i == len(train_data) - 1:
             optimizer.zero_grad()
             g_batch = model._collate_fn(g_batch)
-            g_embedding = model.encode(g_batch)
-            binary_logit = model.classifier(g_embedding)
+            binary_logit = model(g_batch)
             y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
             loss= model.loss(binary_logit, y_batch)
             

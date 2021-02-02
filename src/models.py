@@ -133,6 +133,9 @@ class DVAEncoder(nn.Module):
             H_pred = [[g.vs[x][H_name] for x in g.predecessors(v)] for g in G]
             if self.vid:
                 vids = [self._one_hot(g.es[[g.get_eid(i, v) for i in g.predecessors(v)]]['e_type'], self.net) for g in G]
+                if v == 4:
+                    print(vids)
+                    exit()
             gate, mapper = self.gate_forward, self.mapper_forward
         if self.vid:
             H_pred = [[torch.cat([x[i], y[i:i+1]], 1) for i in range(len(x))] for x, y in zip(H_pred, vids)]
@@ -217,146 +220,14 @@ class DVAEncoder(nn.Module):
         # mu, logvar = self.fc1(Hg), self.fc2(Hg) 
         return Hg
 
-    # def reparameterize(self, mu, logvar, eps_scale=0.01):
-    #     # return z ~ N(mu, std)
-    #     if self.training:
-    #         std = logvar.mul(0.5).exp_()
-    #         eps = torch.randn_like(std) * eps_scale
-    #         return eps.mul(std).add_(mu)
-    #     else:
-    #         return mu
 
-    # def _get_edge_score(self, Hvi, H, H0):
-    #     # compute scores for edges from vi based on Hvi, H (current vertex) and H0
-    #     # in most cases, H0 need not be explicitly included since Hvi and H contain its information
-    #     return self.sigmoid(self.add_edge(torch.cat([Hvi, H], -1)))
-
-    # def decode(self, z, stochastic=True):
-    #     # decode latent vectors z back to graphs
-    #     # if stochastic=True, stochastically sample each action from the predicted distribution;
-    #     # otherwise, select argmax action deterministically.
-    #     H0 = self.tanh(self.fc3(z))  # or relu activation, similar performance
-    #     G = [igraph.Graph(directed=True) for _ in range(len(z))]
-    #     for g in G:
-    #         g.add_vertex(type=self.START_TYPE)
-    #     self._update_v(G, 0, H0)
-    #     finished = [False] * len(G)
-    #     for idx in range(1, self.max_n):
-    #         # decide the type of the next added vertex
-    #         if idx == self.max_n - 1:  # force the last node to be end_type
-    #             new_types = [self.END_TYPE] * len(G)
-    #         else:
-    #             Hg = self._get_graph_state(G, decode=True)
-    #             type_scores = self.add_vertex(Hg)
-    #             if stochastic:
-    #                 type_probs = F.softmax(type_scores, 1).cpu().detach().numpy()
-    #                 new_types = [np.random.choice(range(self.nvt), p=type_probs[i]) 
-    #                              for i in range(len(G))]
-    #             else:
-    #                 new_types = torch.argmax(type_scores, 1)
-    #                 new_types = new_types.flatten().tolist()
-    #         for i, g in enumerate(G):
-    #             if not finished[i]:
-    #                 g.add_vertex(type=new_types[i])
-    #         self._update_v(G, idx)
-
-    #         # decide connections
-    #         edge_scores = []
-    #         for vi in range(idx-1, -1, -1):
-    #             Hvi = self._get_vertex_state(G, vi)
-    #             H = self._get_vertex_state(G, idx)
-    #             ei_score = self._get_edge_score(Hvi, H, H0)
-    #             if stochastic:
-    #                 random_score = torch.rand_like(ei_score)
-    #                 decisions = random_score < ei_score
-    #             else:
-    #                 decisions = ei_score > 0.5
-    #             for i, g in enumerate(G):
-    #                 if finished[i]:
-    #                     continue
-    #                 if new_types[i] == self.END_TYPE: 
-    #                 # if new node is end_type, connect it to all loose-end vertices (out_degree==0)
-    #                     end_vertices = set([v.index for v in g.vs.select(_outdegree_eq=0) 
-    #                                         if v.index != g.vcount()-1])
-    #                     for v in end_vertices:
-    #                         g.add_edge(v, g.vcount()-1)
-    #                     finished[i] = True
-    #                     continue
-    #                 if decisions[i, 0]:
-    #                     g.add_edge(vi, g.vcount()-1)
-    #             self._update_v(G, idx)
-
-    #     for g in G:
-    #         del g.vs['H_forward']  # delete hidden states to save GPU memory
-    #     return G
-
-    # def loss(self, mu, logvar, G_true, beta=0.005):
-    #     # compute the loss of decoding mu and logvar to true graphs using teacher forcing
-    #     # ensure when computing the loss of step i, steps 0 to i-1 are correct
-    #     z = self.reparameterize(mu, logvar)
-    #     H0 = self.tanh(self.fc3(z))  # or relu activation, similar performance
-    #     G = [igraph.Graph(directed=True) for _ in range(len(z))]
-    #     for g in G:
-    #         g.add_vertex(type=self.START_TYPE)
-    #     self._update_v(G, 0, H0)
-    #     res = 0  # log likelihood
-    #     for v_true in range(1, self.max_n):
-    #         # calculate the likelihood of adding true types of nodes
-    #         # use start type to denote padding vertices since start type only appears for vertex 0 
-    #         # and will never be a true type for later vertices, thus it's free to use
-    #         true_types = [g_true.vs[v_true]['type'] if v_true < g_true.vcount() 
-    #                       else self.START_TYPE for g_true in G_true]
-    #         Hg = self._get_graph_state(G, decode=True)
-    #         type_scores = self.add_vertex(Hg)
-    #         # vertex log likelihood
-    #         vll = self.logsoftmax1(type_scores)[np.arange(len(G)), true_types].sum()  
-    #         res = res + vll
-    #         for i, g in enumerate(G):
-    #             if true_types[i] != self.START_TYPE:
-    #                 g.add_vertex(type=true_types[i])
-    #         self._update_v(G, v_true)
-
-    #         # calculate the likelihood of adding true edges
-    #         true_edges = []
-    #         for i, g_true in enumerate(G_true):
-    #             true_edges.append(g_true.get_adjlist(igraph.IN)[v_true] if v_true < g_true.vcount()
-    #                               else [])
-    #         edge_scores = []
-    #         for vi in range(v_true-1, -1, -1):
-    #             Hvi = self._get_vertex_state(G, vi)
-    #             H = self._get_vertex_state(G, v_true)
-    #             ei_score = self._get_edge_score(Hvi, H, H0)
-    #             edge_scores.append(ei_score)
-    #             for i, g in enumerate(G):
-    #                 if vi in true_edges[i]:
-    #                     g.add_edge(vi, v_true)
-    #             self._update_v(G, v_true)
-    #         edge_scores = torch.cat(edge_scores[::-1], 1)
-
-    #         ground_truth = torch.zeros_like(edge_scores)
-    #         idx1 = [i for i, x in enumerate(true_edges) for _ in range(len(x))]
-    #         idx2 = [xx for x in true_edges for xx in x]
-    #         ground_truth[idx1, idx2] = 1.0
-
-    #         # edges log-likelihood
-    #         ell = - F.binary_cross_entropy(edge_scores, ground_truth, reduction='sum') 
-    #         res = res + ell
-
-    #     res = -res  # convert likelihood to loss
-    #     kld = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
-    #     return res + beta*kld, res, kld
     def loss(self, binary_logit, y):        
         return self.sat_loss(binary_logit, y)
         
 
 
-    # def encode_decode(self, G):
-    #     mu, logvar = self.encode(G)
-    #     z = self.reparameterize(mu, logvar)
-    #     return self.decode(z)
-
     def forward(self, G):
-        Hg = self.encode(G) # ML: How to get ground truth y.
+        Hg = self.encode(G)
         binary_logit = self.classifier(Hg)
         return binary_logit
     
