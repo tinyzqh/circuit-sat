@@ -135,10 +135,14 @@ class DVAEncoder(nn.Module):
                 vids = [self._one_hot(g.es[[g.get_eid(i, v) for i in g.predecessors(v)]]['e_type'], self.net) for g in G]
                 if v == 4:
                     print(vids)
-                    exit()
+                    print(len(vids))
             gate, mapper = self.gate_forward, self.mapper_forward
         if self.vid:
             H_pred = [[torch.cat([x[i], y[i:i+1]], 1) for i in range(len(x))] for x, y in zip(H_pred, vids)]
+            if v == 4:
+                print(H_pred)
+                print(len(H_pred))
+                exit()
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
             max_n_pred = max([len(x) for x in H_pred])  # maximum number of predecessors
