@@ -203,10 +203,10 @@ class DVAEncoder(nn.Module):
             H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
                                  H0=self._get_zero_hidden(len(G)), reverse=True)
         for _ in range(self.n_rounds):
-            self._propagate_from(G, 0, self.grue_forward,
+            H_vf = self._propagate_from(G, 0, self.grue_forward, H0=H_vf,
                              reverse=False)
             if self.bidir:
-                self._propagate_from(G, self.max_n-1, self.grue_backward, 
+                H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward,  H0=H_vb,
                                  reverse=True)
 
         Hg = self._get_graph_state(G)
