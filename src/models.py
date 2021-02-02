@@ -46,9 +46,11 @@ class DVAEncoder(nn.Module):
 
         # 1. classifer. ML
         self.classifier = nn.Sequential(
-                # nn.Linear(self.gs, self.gs * 2),
-                # nn.Linear(self.gs * 2, 1)
-                nn.Linear(self.gs, 1)
+                nn.Linear(self.gs, self.gs * 2),
+                nn.ReLU(),
+                nn.BatchNorm1d(self.gs * 2),
+                nn.Linear(self.gs * 2, 1)
+                # nn.Linear(self.gs, 1)
                 )
 
         # 2. gate-related

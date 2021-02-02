@@ -108,6 +108,7 @@ optimizer = optim.Adam(model.parameters(), lr=args.lr)
 scheduler = ReduceLROnPlateau(optimizer, 'min', factor=0.1, patience=10, verbose=True)
 
 model.to(device)
+print(model)
 
 
 if args.load_latest_model:
