@@ -133,16 +133,9 @@ class DVAEncoder(nn.Module):
             H_pred = [[g.vs[x][H_name] for x in g.predecessors(v)] for g in G]
             if self.vid:
                 vids = [self._one_hot(g.es[[g.get_eid(i, v) for i in g.predecessors(v)]]['e_type'], self.net) for g in G]
-                # if v == 4:
-                #     print(vids)
-                #     print(len(vids))
             gate, mapper = self.gate_forward, self.mapper_forward
         if self.vid:
             H_pred = [[torch.cat([x[i], y[i:i+1]], 1) for i in range(len(x))] for x, y in zip(H_pred, vids)]
-            # if v == 4:
-            #     print(H_pred)
-            #     print(len(H_pred))
-            #     exit()
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
             max_n_pred = max([len(x) for x in H_pred])  # maximum number of predecessors
@@ -155,9 +148,6 @@ class DVAEncoder(nn.Module):
                 H_pred = torch.cat(H_pred, 0)  # batch * max_n_pred * vs
                 H = self._gated(H_pred, gate, mapper).sum(1)  # batch * hs
         Hv = propagator(X, H)
-        if v == 4:
-            print(Hv.size())
-            exit()
         for i, g in enumerate(G):
             g.vs[v][H_name] = Hv[i:i+1]
         return Hv
@@ -220,7 +210,9 @@ class DVAEncoder(nn.Module):
                                  reverse=True)
 
         Hg = self._get_graph_state(G)
-        # mu, logvar = self.fc1(Hg), self.fc2(Hg) 
+        print(Hg.size())
+        print(Hg[0])
+        exit()
         return Hg
 
 
@@ -233,8 +225,3 @@ class DVAEncoder(nn.Module):
         Hg = self.encode(G)
         binary_logit = self.classifier(Hg)
         return binary_logit
-    
-    # def generate_sample(self, n):
-    #     sample = torch.randn(n, self.nz).to(self.get_device())
-    #     G = self.decode(sample)
-    #     return G
