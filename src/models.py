@@ -71,11 +71,9 @@ class DVAEncoder(nn.Module):
 
         # 3. bidir-related, to unify sizes
         if self.bidir:
-            self.hv_unify = nn.Sequential(
-                    nn.Linear(hs * 2, hs), 
-                    )
             self.hg_unify = nn.Sequential(
                     nn.Linear(self.gs * 2, self.gs), 
+                    nn.BatchNorm1d(self.gs)
                     )
 
         # 4. other
