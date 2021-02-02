@@ -176,7 +176,7 @@ def train(epoch):
     acc = (TP + TN) * 1.0 / TOT
 
     print('====> Epoch: {} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
-          epoch, train_loss, acc))
+          epoch, train_loss.item(), acc.item()))
 
     return train_loss, acc
 
