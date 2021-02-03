@@ -31,11 +31,10 @@ parser.add_argument('--nz', type=int, default=56, metavar='N',
                     help='number of dimensions of latent vectors z')
 parser.add_argument('--bidirectional', action='store_true', default=False,
                     help='whether to use bidirectional encoding')
-parser.add_argument('--n_rounds', type=int, default=10, metavar='N',
+parser.add_argument('--n-rounds', type=int, default=10, metavar='N',
                     help='The number of rounds for information propagation.')
-# parser.add_argument('--predictor', action='store_true', default=False,
-#                     help='whether to train a performance predictor from latent\
-#                     encodings and a VAE at the same time')
+parser.add_argument('--invert-hidden', action='store_true', default=False,
+                    help='invert the hidden state for inverter or use one-hot vector.')
 # optimization settings
 parser.add_argument('--lr', type=float, default=1e-4, metavar='LR',
                     help='learning rate (default: 1e-4)')
