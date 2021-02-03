@@ -7,7 +7,8 @@ python src/train.py --data-name  AIG  \
                 --hs 512 \
                 --nz 64 \
                 --bidirectional \
-                --lr 1e-4 \
-                --epochs 300 \
-                --batch-size 1024
+                --lr 1e-3 \
+                --epochs 50 \
+                --n_rounds 10 \
+                --batch-size 128 
 
