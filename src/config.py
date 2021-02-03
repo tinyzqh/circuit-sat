@@ -12,6 +12,7 @@ parser.add_argument('--save-appendix', default='',
                     help='what to append to data-name as save-name for results')
 parser.add_argument('--save-interval', type=int, default=100, metavar='N',
                     help='how many epochs to wait each time to save model states')
+parser.add_argument('--check-inteval', default=None, type=int, help='The intevral to check model weights.')
 parser.add_argument('--no-test', action='store_true', default=False,
                     help='if True, only training.')
 parser.add_argument('--only-test', action='store_true', default=False,

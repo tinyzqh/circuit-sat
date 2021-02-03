@@ -11,6 +11,7 @@ from shutil import copy
 import torch
 from torch import nn, optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
+from tensorboardX import SummaryWriter
 import numpy as np
 import scipy.io
 from scipy.linalg import qr 
@@ -42,6 +43,7 @@ random.seed(args.seed)
 
 log_file = open(os.path.join(args.log_dir, args.data_name + '.log'), 'a+')
 detail_log_file = open(os.path.join(args.log_dir, args.data_name + '_detail.log'), 'a+')
+writer = SummaryWriter(logdir='runs/lstm')
 
 print(args, file=log_file, flush=True)
 print('Using device:', device, file=log_file, flush=True)
@@ -90,6 +92,7 @@ print('# of validation samples: ', len(test_data))#, file=log_file, flush=True)
 
 if args.small_train:
     train_data = train_data[:100]
+    print('# of training samples shrink: ', len(train_data))
 
 
 '''Prepare the model'''
@@ -145,10 +148,12 @@ def train(epoch):
     pbar = tqdm(train_data)
     g_batch = []
     y_batch = []
+    batch_idx = 0
     for i, (g, y) in enumerate(pbar):
         g_batch.append(g)
         y_batch.append(y)
         if len(g_batch) == args.batch_size or i == len(train_data) - 1:
+            batch_idx += 1
             optimizer.zero_grad()
             g_batch = model._collate_fn(g_batch)
             binary_logit = model(g_batch)
@@ -157,6 +162,9 @@ def train(epoch):
             
             loss.backward()
             optimizer.step()
+            if args.check_inteval and (batch_idx % args.check_inteval) == 0:
+                for name, param in model.named_parameters():
+                    writer.add_histogram(name, param.clone().cpu().data.numpy(), batch_idx)
 
             predicted = (binary_logit > 0).to(float)
             TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
