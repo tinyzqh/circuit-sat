@@ -64,7 +64,8 @@ The functionals and information propagation mechanism of GNN. The implementation
 
 ### Training configuration
 * ~~Haven't considered the multiple-round information propagations. Such implementation is not used in DVAE. I should turn to NeuronSAT for reference then.~~
-* The network is not optimized for the objective. I should check the NN functionality as soon as possible.
+* ~~The network is not optimized for the objective. I should check the NN functionality as soon as possible.~~
+
 
 
 
@@ -73,12 +74,14 @@ The functionals and information propagation mechanism of GNN. The implementation
    > D-VAE has addressed this problem.
 2. How to solve SAT problem in a sensible way?
 3. For the circuit representation learning, should we start from the generative model (learning graph distribution *p(x)*), or start from a supervised task (solving SAT)? From my view, it would be much easier to start from a supervised task.
-4. The size of obtained AIG seems to be quite complicate.
+4. The size of obtained AIG seems to be quite complicated.
 
 ### TO DO
 - [x] Generate SR3to10 optimized AIG dataset.
-- [ ] Try small-size problems, *i.e.*, r3to10 problems.
-
+- [x] Try small-size problems, *i.e.*, r3 problems.
+- [ ] Try the loss used in *least square gan*.
+- [ ] Invert the hidden state if the edge is inverter.
+- [ ] Try other aggregation approaches.
 
 
 
