@@ -332,7 +332,13 @@ class DVAEdgeEncoder(nn.Module):
             H_pred_v = torch.cat(H_pred_v, 0)
             inputs_e = torch.cat(inputs_e, 0)
             He = propagator_e(inputs_e, H_pred_v)
-            exit()
+            ind_list = []
+            ind_start = 0
+            for g in G:
+                ind_end = ind_start + len(g.successors(v))
+                ind_list.append([ind_start, ind_end])
+                ind_start = ind_end
+            He = [[He[inds[0]:inds[1]]] for inds in ind_list]
             max_n_pred = max([len(x) for x in He])  # maximum number of predecessors
             if max_n_pred == 0:
                 H = self._get_zero_hidden(len(G))
