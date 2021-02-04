@@ -87,6 +87,6 @@ The functionals and information propagation mechanism of GNN. The implementation
 - [ ] Try the loss used in *least square gan*.
 - [x] Invert the hidden state if the edge is the invertor.
 - [ ] Try other aggregation approaches.
-
+- [ ] Re-implement the graph construnction part. Right now the speed is not satisfactory.
 
 
