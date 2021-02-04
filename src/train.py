@@ -92,11 +92,9 @@ for (graph, y) in test_data:
     total += 1
 logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in test data.'.format(SAT/total, SAT, total))
 
-exit()
-
 if args.small_train:
     train_data = train_data[:100]
-    print('# of training samples shrink: ', len(train_data))
+    logger.info('# of training samples shrink: {:d}'.format(len(train_data)))
 
 
 '''Prepare the model'''
@@ -116,7 +114,8 @@ optimizer = optim.Adam(model.parameters(), lr=args.lr)
 scheduler = ReduceLROnPlateau(optimizer, 'min', factor=0.1, patience=10, verbose=True)
 
 model.to(device)
-print(model)
+logger.info(model)
+exit()
 
 
 if args.load_latest_model:
