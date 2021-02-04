@@ -22,7 +22,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from util import *
-from models import DVAEncoder
+from models import *
 
 from config import parser
 
