@@ -328,7 +328,11 @@ class DVAEdgeEncoder(nn.Module):
             gate, mapper = self.gate_forward, self.mapper_forward
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
-            max_n_pred = max([len(x[0]) for x in He])  # maximum number of predecessors
+            max_n_pred = max([len(x) for x in H_pred_v])  # maximum number of predecessors
+            min_n_pred = min([len(x) for x in H_pred_v])
+            print('v:', v) 
+            print(max_n_pred)
+            print(min_n_pred)
             if max_n_pred == 0:
                 H = self._get_zero_hidden(len(G))
             else:
@@ -351,7 +355,6 @@ class DVAEdgeEncoder(nn.Module):
                     n_e += 1
                     ind_list.append([ind_start, ind_end])
                     ind_start = ind_end
-                print(He.size())
                 He = [He[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
                 H_pred = [torch.cat([h_pred] + 
                             [self._get_zeros(max_n_pred - len(h_pred), self.vs)], 0).unsqueeze(0) 
