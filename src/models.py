@@ -130,7 +130,7 @@ class DVAEncoder(nn.Module):
             if self.vid:
                 vids = [self._one_hot(g.es[[g.get_eid(i, v) for i in g.predecessors(v)]]['e_type'], self.net) for g in G]
             else:
-                H_pred = [[-g.vs[x][H_name] if g.get_eid(x, i) else g.vs[x][H_name] for x in g.predecessors(v)] for g in G]
+                H_pred = [[-g.vs[x][H_name] if g.get_eid(x, v) else g.vs[x][H_name] for x in g.predecessors(v)] for g in G]
             gate, mapper = self.gate_forward, self.mapper_forward
         if self.vid:
             H_pred = [[torch.cat([x[i], y[i:i+1]], 1) for i in range(len(x))] for x, y in zip(H_pred, vids)]
