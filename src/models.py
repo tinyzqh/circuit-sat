@@ -331,6 +331,7 @@ class DVAEdgeEncoder(nn.Module):
                 H = self._get_zero_hidden(len(G))
             else:
                 non_empty = [i for i, h in enumerate(H_pred_v) if len(h)]
+                print(max_n_pred)
                 total_e = sum([len(x[0]) for x in H_pred_v])
                 size_e = (total_e, self.hs)
                 print(size_e)
