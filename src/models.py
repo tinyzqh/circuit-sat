@@ -132,6 +132,10 @@ class DVAEncoder(nn.Module):
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
             max_n_pred = max([len(x) for x in H_pred])  # maximum number of predecessors
+            min_n_pred = min([len(x) for x in H_pred])
+            print(min_n_pred)
+            if min_n_pred == 0:
+                exit()
             if max_n_pred == 0:
                 H = self._get_zero_hidden(len(G))
             else:
