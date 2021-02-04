@@ -36,20 +36,8 @@ def load_object(filename):
 
 
 def load_module_state(model, state_name):
-    pretrained_dict = torch.load(state_name)
     model_dict = model.state_dict()
-
-    # to delete, to correct grud names
-    '''
-    new_dict = {}
-    for k, v in pretrained_dict.items():
-        if k.startswith('grud_forward'):
-            new_dict['grud'+k[12:]] = v
-        else:
-            new_dict[k] = v
-    pretrained_dict = new_dict
-    '''
-
+    
     # 1. filter out unnecessary keys
     pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
 

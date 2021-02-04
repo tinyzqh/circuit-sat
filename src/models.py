@@ -20,8 +20,6 @@ class DVAEncoder(nn.Module):
         self.max_n = max_n  # maximum number of vertices
         self.nvt = nvt  # number of vertex types
         self.net = net  # number of edge types
-        # self.START_TYPE = START_TYPE
-        # self.END_TYPE = END_TYPE
         self.hs = hs  # hidden state size of each vertex
         # self.nz = nz  # size of latent representation z
         self.n_rounds = n_rounds
@@ -77,10 +75,6 @@ class DVAEncoder(nn.Module):
                     )
 
         # 4. other
-        self.relu = nn.ReLU()
-        self.sigmoid = nn.Sigmoid()
-        self.tanh = nn.Tanh()
-        self.logsoftmax1 = nn.LogSoftmax(1)
         self.sat_loss = nn.BCEWithLogitsLoss()
 
     def get_device(self):

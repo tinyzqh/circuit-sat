@@ -115,29 +115,25 @@ scheduler = ReduceLROnPlateau(optimizer, 'min', factor=0.1, patience=10, verbose
 
 model.to(device)
 logger.info(model)
-exit()
 
 
-if args.load_latest_model:
-    load_module_state(model, os.path.join(args.res_dir, 'latest_model.pth'))
-else:
-    if args.continue_from is not None:
-        epoch = args.continue_from
-        load_module_state(model, os.path.join(args.res_dir, 
-                                              'model_checkpoint{}.pth'.format(epoch)))
-        load_module_state(optimizer, os.path.join(args.res_dir, 
-                                                  'optimizer_checkpoint{}.pth'.format(epoch)))
-        load_module_state(scheduler, os.path.join(args.res_dir, 
-                                                  'scheduler_checkpoint{}.pth'.format(epoch)))
+if args.continue_from is not None:
+    logger.info('Continue training from {}'.format(args.continue_from))
+    ckpt = torch.load(os.path.join(args.res_dir, args.continue_from))
+    start_epoch = ckpt['epoch']
+    load_module_state(model, ckpt['state_dict'])
+    load_module_state(optimizer, ckpt['optimizer'])
+    load_module_state(scheduler, ckpt['scheduler'])
 
 # plot sample train/test graphs
-if not os.path.exists(os.path.join(args.res_dir, 'train_graph_id0.pdf')) or args.reprocess:
+if not os.path.exists(os.path.join(args.fig_dir, 'train_graph_id0.pdf')):
     for data in ['train_data', 'test_data']:
-        G = [g for g, y in eval(data)[:10]]
+        G = [g for g, y in eval(data)[:5]]
         for i, g in enumerate(G):
             name = '{}_graph_id{}'.format(data[:-5], i)
             plot_DAG(g, args.res_dir, name, data_type=args.data_type)
 
+exit()
 
 '''
 Define train/test functions.

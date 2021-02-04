@@ -8,23 +8,17 @@ parser.add_argument('--data-type', default='AIG', choices=['AIG'],
 parser.add_argument('--data-name', default='sr10', help='graph dataset name')
 parser.add_argument('--nvt', type=int, default=4, help='number of different node types, \
                     4 for AIG setting')
-# parser.add_argument('--save-appendix', default='', 
-#                     help='what to append to data-name as save-name for results')
 parser.add_argument('--save-interval', type=int, default=100, metavar='N',
                     help='how many epochs to wait each time to save model states')
 parser.add_argument('--check-inteval', default=None, type=int, help='The intevral to check model weights.')
-parser.add_argument('--no-test', action='store_true', default=False,
-                    help='if True, only training.')
 parser.add_argument('--only-test', action='store_true', default=False,
                     help='if True, perform some experiments without training the model')
 parser.add_argument('--small-train', action='store_true', default=False,
                     help='if True, use a smaller version of train set')
 # model settings
 parser.add_argument('--model', default='DVAEncoder', choices=['DVAEncoder'],help='model to use: DVAE. No other options for now.')
-parser.add_argument('--load-latest-model', action='store_true', default=False,
-                    help='whether to load latest_model.pth')
-parser.add_argument('--continue-from', type=int, default=None, 
-                    help="from which epoch's checkpoint to continue training")
+parser.add_argument('--continue-from', type=str, default=None, 
+                    help="checkpoint file name to continue training")
 parser.add_argument('--hs', type=int, default=100, metavar='N',
                     help='hidden size of GRUs')
 parser.add_argument('--nz', type=int, default=56, metavar='N',
