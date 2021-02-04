@@ -330,9 +330,10 @@ class DVAEdgeEncoder(nn.Module):
             if max_n_pred == 0:
                 H = self._get_zero_hidden(len(G))
             else:
-                total_e = sum([len(x) for x in H_pred_v])
+                print('h', len(H_pred_v))
+                total_e = sum([len(x) if x != [] else 1 for x in H_pred_v])
                 size_e = (total_e, self.hs)
-                non_empty = [i for i, x in enumerate(H_pred_v) if len(x)]
+                non_empty = [i for i, x in enumerate(H_pred_v) if x != []]
                 H_pred_v = [x for x in H_pred_v if len(x)]
                 inputs_e = [x for x in inputs_e if x != None]
                 H_pred_v = [torch.cat(h_pred_v, 0) for h_pred_v in H_pred_v]
@@ -343,11 +344,9 @@ class DVAEdgeEncoder(nn.Module):
                 ind_list = []
                 ind_start = 0
                 He_recover = torch.zeros(size_e).to(self.device)
-                print(He.size())
-                print(He_recover.size())
-                for (i, inx) in enumerate(non_empty):
-                    He_recover[inx] = He[i]   # TODO: to optimized.
-                
+                for (i, ind) in enumerate(non_empty):
+                    He_recover[ind] = He[i]   # TODO: to optimized.
+                He = He_recover
                 n_e = 0
                 for g in G:
                     if reverse:
@@ -361,7 +360,7 @@ class DVAEdgeEncoder(nn.Module):
                     n_e += 1
                     ind_list.append([ind_start, ind_end])
                     ind_start = ind_end
-                He = [He_recover[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
+                He = [He[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
                 H_pred = [torch.cat([h_pred] + 
                             [self._get_zeros(max_n_pred - len(h_pred), self.hs)], 0).unsqueeze(0) 
                             for h_pred in He]  # pad all to same length
