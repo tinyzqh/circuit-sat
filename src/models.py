@@ -319,20 +319,16 @@ class DVAEdgeEncoder(nn.Module):
         if reverse:
             H_name = 'H_backward'  # name of the hidden states attribute
             H_pred_v = [[g.vs[x][H_name] for x in g.successors(v)] for g in G]
-            inputs_e = [self._one_hot(g.es[[g.get_eid(v, i) for i in g.successors(v)]]['e_type'], self.net) for g in G]
+            inputs_e = [self._one_hot(g.es[[g.get_eid(v, x) for x in g.successors(v)]]['e_type'], self.net) for g in G]
             gate, mapper = self.gate_backward, self.mapper_backward
         else:
             H_name = 'H_forward'  # name of the hidden states attribute
             H_pred_v = [[g.vs[x][H_name] for x in g.predecessors(v)] for g in G]
-            inputs_e = [self._one_hot(g.es[[g.get_eid(i, v) for i in g.predecessors(v)]]['e_type'], self.net) for g in G]
+            inputs_e = [self._one_hot(g.es[[g.get_eid(x, v) for x in g.predecessors(v)]]['e_type'], self.net) for g in G]
             gate, mapper = self.gate_forward, self.mapper_forward
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
             max_n_pred = max([len(x) for x in H_pred_v])  # maximum number of predecessors
-            min_n_pred = min([len(x) for x in H_pred_v])
-            print('v:', v) 
-            print(max_n_pred)
-            print(min_n_pred)
             if max_n_pred == 0:
                 H = self._get_zero_hidden(len(G))
             else:

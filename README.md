@@ -61,9 +61,13 @@ The type values for non-inverter and inverter edge:
 ### GNN design
 The functionals and information propagation mechanism of GNN. The implementation details are listed as follows.
 * Inverter and Un-Inverter edges shouldn't share the weights (GRU cells). Or should we add an edge vector to embed such information? For now, I used one-hot vectors to encode edge information.
-* Assume the present ordering of vertices is the topological ordering. Need to check later.
+* **Assume the present ordering of vertices is the topological ordering. Need to check later.** seems to be not neccesary.
 * Bi-direction is used, following the convention of *NeuronSAT* and *Learning to Solve SAT*.
 * Should we add MLPs before GRU layer, just like what they do in *NeuronSAT*.
+  
+Two implementations right now:
+1. (DVAEEncoder) GNN with one LSTM. Edge types are encoded as one-hot vectors.
+2. (DVAEEdgeEncoder) GNN with two LSTMs. One for vertices with aggeration function, the other for edge.
 
 ### Training configuration
 * ~~Haven't considered the multiple-round information propagations. Such implementation is not used in DVAE. I should turn to NeuronSAT for reference then.~~
