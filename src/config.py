@@ -27,7 +27,7 @@ parser.add_argument('--bidirectional', action='store_true', default=False,
                     help='whether to use bidirectional encoding')
 parser.add_argument('--n-rounds', type=int, default=10, metavar='N',
                     help='The number of rounds for information propagation.')
-parser.add_argument('--invert-hidden', action='store_true', default=False,
+parser.add_argument('--no-invert', action='store_true', default=False,
                     help='invert the hidden state for inverter or use one-hot vector.')
 # optimization settings
 parser.add_argument('--lr', type=float, default=1e-4, metavar='LR',

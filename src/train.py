@@ -96,7 +96,7 @@ model = eval(args.model)(
         nz=args.nz,
         n_rounds=args.n_rounds,
         bidirectional=args.bidirectional,
-        vid=args.invert_hidden
+        vid=args.no_invert
         )
 # optimizer and scheduler
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
