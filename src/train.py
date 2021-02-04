@@ -117,7 +117,7 @@ if args.continue_from is not None:
     load_module_state(scheduler, ckpt['scheduler'])
 
 # plot sample train/test graphs
-if not os.path.exists(os.path.join(args.fig_dir, 'train_graph_id0.pdf')):
+if not os.path.exists(os.path.join(args.fig_dir, 'train_graph_id0.png')):
     logger.info('Plotting sample graphs...')
     for data in ['train_data', 'test_data']:
         G = [g for g, y in eval(data)[:5]]
