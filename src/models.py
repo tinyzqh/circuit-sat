@@ -65,7 +65,7 @@ class DVAEncoder(nn.Module):
         # 3. bidir-related, to unify sizes
         if self.bidir:
             self.hg_unify = nn.Sequential(
-                    nn.Linear(self.gs * 2, self.gs), 
+                    nn.Linear(self.hs * 2, self.gs), 
                     nn.BatchNorm1d(self.gs)
                     )
 
@@ -243,7 +243,7 @@ class DVAEdgeEncoder(nn.Module):
 
         # 1. classifer. ML
         self.classifier = nn.Sequential(
-                nn.Linear(self.gs, self.gs * 2),
+                nn.Linear(self.hs, self.gs * 2),
                 nn.ReLU(),
                 nn.BatchNorm1d(self.gs * 2),
                 nn.Linear(self.gs * 2, 1)
@@ -268,7 +268,7 @@ class DVAEdgeEncoder(nn.Module):
         # 3. bidir-related, to unify sizes
         if self.bidir:
             self.hg_unify = nn.Sequential(
-                    nn.Linear(self.gs * 2, self.gs), 
+                    nn.Linear(self.hs * 2, self.gs), 
                     nn.BatchNorm1d(self.gs)
                     )
 
