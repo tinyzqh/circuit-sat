@@ -356,7 +356,7 @@ class DVAEdgeEncoder(nn.Module):
                     n_e += 1
                     ind_list.append([ind_start, ind_end])
                     ind_start = ind_end
-                He_recover = torch.zeros(size_e)
+                He_recover = torch.zeros(size_e).to(self.device)
                 He_recover[non_empty] = He
                 He = [He_recover[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
                 H_pred = [torch.cat([h_pred] + 
