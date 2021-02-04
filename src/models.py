@@ -318,17 +318,18 @@ class DVAEdgeEncoder(nn.Module):
         X = self._one_hot(v_types, self.nvt)
         if reverse:
             H_name = 'H_backward'  # name of the hidden states attribute
-            H_pred_v = [torch.cat([g.vs[x][H_name] for x in g.successors(v)], 0) for g in G]
+            H_pred_v = [[g.vs[x][H_name] for x in g.successors(v)] for g in G]
             inputs_e = [self._one_hot(g.es[[g.get_eid(v, i) for i in g.successors(v)]]['e_type'], self.net) for g in G]
             gate, mapper = self.gate_backward, self.mapper_backward
         else:
             H_name = 'H_forward'  # name of the hidden states attribute
-            H_pred_v = [torch.cat([g.vs[x][H_name] for x in g.predecessors(v)], 0) for g in G]
+            H_pred_v = [[g.vs[x][H_name] for x in g.predecessors(v)] for g in G]
             inputs_e = [self._one_hot(g.es[[g.get_eid(i, v) for i in g.predecessors(v)]]['e_type'], self.net) for g in G]
             gate, mapper = self.gate_forward, self.mapper_forward
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
-            H_pred_v = torch.cat(H_pred_v, 0)
+            H_pred_v = [torch.cat(h_pred_v, 0) for h_pred_v in H_pred_v]
+            H_pred_v = torch(H_pred_v, 0)
             inputs_e = torch.cat(inputs_e, 0)
             He = propagator_e(inputs_e, H_pred_v)
             exit()
