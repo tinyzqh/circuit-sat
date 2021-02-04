@@ -343,6 +343,8 @@ class DVAEdgeEncoder(nn.Module):
                 ind_list = []
                 ind_start = 0
                 He_recover = torch.zeros(size_e).to(self.device)
+                print(He.size())
+                print(He_recover.size())
                 for (i, inx) in enumerate(non_empty):
                     He_recover[inx] = He[i]   # TODO: to optimized.
                 
