@@ -39,7 +39,7 @@ np.random.seed(args.seed)
 random.seed(args.seed)
 
 args.exp_name = '{}_{}_hs{:d}_nz{:d}_nr{:d}_lr{:.2e}_b{:d}_bi{:d}_in{:d}'.format(args.data_name, args.model, args.hs, args.nz, 
-                            args.n_rounds, args.lr, args.batch_size, int(args.bidirectional), int(args.invert_hidden))
+                            args.n_rounds, args.lr, args.batch_size, int(args.bidirectional), int(args.no_invert))
 log_dir = os.path.join(args.log_dir, args.exp_name + '.log')
 logger.add(log_dir)
 logger.info(args)
