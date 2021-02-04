@@ -8,8 +8,8 @@ parser.add_argument('--data-type', default='AIG', choices=['AIG'],
 parser.add_argument('--data-name', default='sr10', help='graph dataset name')
 parser.add_argument('--nvt', type=int, default=4, help='number of different node types, \
                     4 for AIG setting')
-parser.add_argument('--save-appendix', default='', 
-                    help='what to append to data-name as save-name for results')
+# parser.add_argument('--save-appendix', default='', 
+#                     help='what to append to data-name as save-name for results')
 parser.add_argument('--save-interval', type=int, default=100, metavar='N',
                     help='how many epochs to wait each time to save model states')
 parser.add_argument('--check-inteval', default=None, type=int, help='The intevral to check model weights.')
@@ -46,8 +46,6 @@ parser.add_argument('--infer-batch-size', type=int, default=128, metavar='N',
                     help='batch size during inference')
 parser.add_argument('--no-cuda', action='store_true', default=False,
                     help='disables CUDA training')
-# parser.add_argument('--all-gpus', action='store_true', default=False,
-#                     help='use all available GPUs')
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
 

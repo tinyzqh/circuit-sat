@@ -20,14 +20,15 @@ The libraries we need:
 The downloading and installation of these libraries are packed in [setup.sh](setup.sh).
 
 ### Workflow
-* **Step1**: *PyMiniSovlers* to generate SAT and UNSAT pairs in *dimacs* format, which representing the propositional equations as CNF;
-* **Step2**: *CNFtoAIG* to convert the CNF circuits into AIG circuits;
-* **Step3**: *ABC* to optimize AIG and output optimized AIG, which is usually be done for synthesis. The optimization process follows the [demo example](https://github.com/berkeley-abc/abc/blob/master/src/demo.c): 1, (Balancing) `balance`; 2, (Synthesis) `balance; rewrite -l; rewrite -lz; balance; rewrite -lz; balance`; 3, (Verification) `ces`; 4, Save AIG `write *.aig`. I assume the networks before and after synthesis are equivalent.
-* **Step4** (Optional): *aigtoaig* (utilities in *AIGER*) to convert binary AIGER format (\*.aig) into ASCII AIGER (\*.aag) format.
-* **Step5**: Parse and construct graphs in [igraph](https://github.com/igraph/python-igraph) format with generated AIG circuits.
-<!-- * **Step6** (TO DO): Cirtui representation learning. -->
+* [**Step1**](scripts/gen_dimacs.sh): *PyMiniSovlers* to generate SAT and UNSAT pairs in *dimacs* format, which representing the propositional equations as CNF;
+* [**Step2**](scripts/dimacs2aig.sh): *CNFtoAIG* to convert the CNF circuits into AIG circuits;
+* [**Step3**](scripts/aig2aigabc.sh): *ABC* to optimize AIG and output optimized AIG, which is usually be done for synthesis. The optimization process follows the [demo example](https://github.com/berkeley-abc/abc/blob/master/src/demo.c): 1, (Balancing) `balance`; 2, (Synthesis) `balance; rewrite -l; rewrite -lz; balance; rewrite -lz; balance`; 3, (Verification) `ces`; 4, Save AIG `write *.aig`. I assume the networks before and after synthesis are equivalent.
+* [**Step4**](scripts/aig2aigabc.sh): *aigtoaig* (utilities in *AIGER*) to convert binary AIGER format (\*.aig) into ASCII AIGER (\*.aag) format.
+* [**Step5**](scripts/aigabc2igraph.sh): Parse and construct graphs in [igraph](https://github.com/igraph/python-igraph) format with generated AIG circuits.
 
-The optimiz AIG looks like as follow:
+All steps can be done using [bash scripts](scripts/data_gen.sh).
+
+The optimizd AIG looks like as follow:
 
 ![optimized AIG](figs/train_graph_id0.png)
 
@@ -65,6 +66,7 @@ The functionals and information propagation mechanism of GNN. The implementation
 ### Training configuration
 * ~~Haven't considered the multiple-round information propagations. Such implementation is not used in DVAE. I should turn to NeuronSAT for reference then.~~
 * ~~The network is not optimized for the objective. I should check the NN functionality as soon as possible.~~
+* The learning rate and the hyperparameter setting of optimizer are critical.
 
 
 

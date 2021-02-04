@@ -3,9 +3,9 @@ import os
 import sys
 import math
 import pickle
-import pdb
 import argparse
 import random
+from loguru import logger
 from tqdm import tqdm
 from shutil import copy
 import torch
@@ -23,7 +23,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from util import *
 from models import DVAEncoder
-# from bayesian_optimization.evaluate_BN import Eval_BN
 
 from config import parser
 
@@ -40,9 +39,14 @@ else:
 np.random.seed(args.seed)
 random.seed(args.seed)
 
-
-log_file = open(os.path.join(args.log_dir, args.data_name + '.log'), 'a+')
-detail_log_file = open(os.path.join(args.log_dir, args.data_name + '_detail.log'), 'a+')
+args.exp_name = '{}_{}_hs{:d}_nz{:d}_nr{:d}_lr{:.2e}_b{:d}_bi{:d}_in{:d}'.format(args.data_name, args.model, args.hs, args.nz, 
+                            args.n_rounds, args.lr, args.batch_size, int(args.bidirectional), int(args.invert_hidden))
+log_dir = os.path.join(args.exp_name + '.log')
+logger.add(log_dir)
+logger.info(args)
+exit()
+# log_file = open(os.path.join(args.log_dir, args.data_name + '.log'), 'a+')
+# detail_log_file = open(os.path.join(args.log_dir, args.data_name + '_detail.log'), 'a+')
 writer = SummaryWriter(logdir='runs/lstm')
 
 print(args, file=log_file, flush=True)
@@ -216,14 +220,14 @@ def test():
             total += len(g_batch)
             test_loss += loss.item()
 
-            pbar.set_description('loss: {:.4f}, Acc: %.3f%% (%d/%d)'.format(pred_loss.item()/len(g_batch), 100.*correct/total, correct, total))
+            pbar.set_description('loss: {:.4f}, Acc: %.3f%% (%d/%d)'.format(test_loss/len(g_batch), 100.*correct/total, correct, total))
 
             g_batch = []
             y_batch = []
     test_loss /= len(test_data)
     test_acc = correct / len(test_data)
     print('Test average loss: {0}, Accuracy: {1:.4f}'.format(
-        pred_loss, correct))
+        test_loss, correct))
     return test_loss, test_acc
     
 
@@ -291,7 +295,3 @@ if not args.no_test:
         result_file.write("Epoch {} Test recon loss: {} | Acc: {:.4f}".format(
         epoch, test_loss, test_acc))
 
-
-
-
-pdb.set_trace()
