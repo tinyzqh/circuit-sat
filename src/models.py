@@ -15,15 +15,14 @@ import pdb
     For now, the edge information is encoded using one-hot vectors.
 '''
 class DVAEncoder(nn.Module):
-    def __init__(self, max_n, nvt, net, hs=501, nz=56, n_rounds=26, bidirectional=True, vid=True):
+    def __init__(self, max_n, nvt, net, hs=100, gs=100, n_rounds=26, bidirectional=True, vid=True):
         super(DVAEncoder, self).__init__()
         self.max_n = max_n  # maximum number of vertices
         self.nvt = nvt  # number of vertex types
         self.net = net  # number of edge types
         self.hs = hs  # hidden state size of each vertex
-        # self.nz = nz  # size of latent representation z
+        self.gs = gs  # size of graph state
         self.n_rounds = n_rounds
-        self.gs = hs  # size of graph state
         self.bidir = bidirectional  # whether to use bidirectional encoding
         self.vid = vid  # ML: Change to flag of including one-hot edge vector
         self.device = None
@@ -219,15 +218,14 @@ class DVAEncoder(nn.Module):
 
 
 class DVAEdgeEncoder(nn.Module):
-    def __init__(self, max_n, nvt, net, hs=501, nz=56, n_rounds=26, bidirectional=True, vid=True):
-        super(DVAEncoder, self).__init__()
+    def __init__(self, max_n, nvt, net, hs=100, gs=100, n_rounds=26, bidirectional=True, vid=True):
+        super(DVAEdgeEncoder, self).__init__()
         self.max_n = max_n  # maximum number of vertices
         self.nvt = nvt  # number of vertex types
         self.net = net  # number of edge types
         self.hs = hs  # hidden state size of each vertex
-        # self.nz = nz  # size of latent representation z
+        self.gs = gs  # size of graph state
         self.n_rounds = n_rounds
-        self.gs = hs  # size of graph state
         self.bidir = bidirectional  # whether to use bidirectional encoding
         self.vid = vid  # ML: Change to flag of including one-hot edge vector
         self.device = None

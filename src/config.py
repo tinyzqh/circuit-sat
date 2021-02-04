@@ -21,7 +21,7 @@ parser.add_argument('--continue-from', type=str, default=None,
                     help="checkpoint file name to continue training")
 parser.add_argument('--hs', type=int, default=100, metavar='N',
                     help='hidden size of GRUs')
-parser.add_argument('--nz', type=int, default=56, metavar='N',
+parser.add_argument('--gs', type=int, default=100, metavar='N',
                     help='number of dimensions of latent vectors z')
 parser.add_argument('--bidirectional', action='store_true', default=False,
                     help='whether to use bidirectional encoding')
