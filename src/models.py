@@ -342,6 +342,10 @@ class DVAEdgeEncoder(nn.Module):
 
                 ind_list = []
                 ind_start = 0
+                He_recover = torch.zeros(size_e).to(self.device)
+                for (i, inx) in enumerate(non_empty):
+                    He_recover[inx] = He[i]   # TODO: to optimized.
+                
                 n_e = 0
                 for g in G:
                     if reverse:
@@ -355,9 +359,6 @@ class DVAEdgeEncoder(nn.Module):
                     n_e += 1
                     ind_list.append([ind_start, ind_end])
                     ind_start = ind_end
-                He_recover = torch.zeros(size_e).to(self.device)
-                for (i, inx) in enumerate(non_empty):
-                    He_recover[inx] = He[i]   # TODO: to optimized.
                 He = [He_recover[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
                 H_pred = [torch.cat([h_pred] + 
                             [self._get_zeros(max_n_pred - len(h_pred), self.hs)], 0).unsqueeze(0) 
