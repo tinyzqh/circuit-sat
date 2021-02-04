@@ -328,38 +328,36 @@ class DVAEdgeEncoder(nn.Module):
             gate, mapper = self.gate_forward, self.mapper_forward
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
-            H_pred_v = [torch.cat(h_pred_v, 0) for h_pred_v in H_pred_v]
-            H_pred_v = torch.cat(H_pred_v, 0)
-            inputs_e = torch.cat(inputs_e, 0)
-            He = propagator_e(inputs_e, H_pred_v)
-            ind_list = []
-            ind_start = 0
-            n_e = 0
-            for g in G:
-                if reverse:
-                    ind_end = ind_start + len(g.successors(v))
-                    for x in g.successors(v):
-                        g.es[g.get_eid(v, x)][H_name] = He[n_e]
-                else:
-                    ind_end = ind_start + len(g.predecessors(v))
-                    for x in g.predecessors(v):
-                        g.es[g.get_eid(x, v)][H_name] = He[n_e]
-                n_e += 1
-                ind_list.append([ind_start, ind_end])
-                ind_start = ind_end
-            print(He.size())
-            He = [He[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
             max_n_pred = max([len(x[0]) for x in He])  # maximum number of predecessors
             if max_n_pred == 0:
                 H = self._get_zero_hidden(len(G))
             else:
+                H_pred_v = [torch.cat(h_pred_v, 0) for h_pred_v in H_pred_v]
+                H_pred_v = torch.cat(H_pred_v, 0)
+                inputs_e = torch.cat(inputs_e, 0)
+                He = propagator_e(inputs_e, H_pred_v)
+                ind_list = []
+                ind_start = 0
+                n_e = 0
+                for g in G:
+                    if reverse:
+                        ind_end = ind_start + len(g.successors(v))
+                        for x in g.successors(v):
+                            g.es[g.get_eid(v, x)][H_name] = He[n_e]
+                    else:
+                        ind_end = ind_start + len(g.predecessors(v))
+                        for x in g.predecessors(v):
+                            g.es[g.get_eid(x, v)][H_name] = He[n_e]
+                    n_e += 1
+                    ind_list.append([ind_start, ind_end])
+                    ind_start = ind_end
+                print(He.size())
+                He = [He[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
                 H_pred = [torch.cat([h_pred] + 
                             [self._get_zeros(max_n_pred - len(h_pred), self.vs)], 0).unsqueeze(0) 
                             for h_pred in He]  # pad all to same length
                 H_pred = torch.cat(H_pred, 0)  # batch * max_n_pred * vs
                 H = self._gated(H_pred, gate, mapper).sum(1)  # batch * hs
-            n_e = 0
-
         Hv = propagator_v(X, H)
         for i, g in enumerate(G):
             g.vs[v][H_name] = Hv[i:i+1]
