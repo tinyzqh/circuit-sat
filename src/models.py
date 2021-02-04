@@ -360,7 +360,7 @@ class DVAEdgeEncoder(nn.Module):
                 He_recover[non_empty] = He
                 He = [He_recover[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
                 H_pred = [torch.cat([h_pred] + 
-                            [self._get_zeros(max_n_pred - len(h_pred), self.vs)], 0).unsqueeze(0) 
+                            [self._get_zeros(max_n_pred - len(h_pred), self.hs)], 0).unsqueeze(0) 
                             for h_pred in He]  # pad all to same length
                 H_pred = torch.cat(H_pred, 0)  # batch * max_n_pred * vs
                 H = self._gated(H_pred, gate, mapper).sum(1)  # batch * hs
