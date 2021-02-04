@@ -329,7 +329,7 @@ class DVAEdgeEncoder(nn.Module):
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
             H_pred_v = [torch.cat(h_pred_v, 0) for h_pred_v in H_pred_v]
-            H_pred_v = torch(H_pred_v, 0)
+            H_pred_v = torch.cat(H_pred_v, 0)
             inputs_e = torch.cat(inputs_e, 0)
             He = propagator_e(inputs_e, H_pred_v)
             exit()
