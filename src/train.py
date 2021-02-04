@@ -82,7 +82,7 @@ total = 0
 for (graph, y) in train_data:
     if y == 1: SAT += 1
     total += 1
-logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in training data.' % (SAT/total, SAT, total))
+logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in training data.'.format(SAT/total, SAT, total))
 
 logger.info('# of validation samples: {:d}'.format(len(test_data)))#, file=log_file, flush=True)
 SAT=0
@@ -90,7 +90,7 @@ total = 0
 for (graph, y) in test_data:
     if y == 1: SAT += 1
     total += 1
-logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in test data.' % (SAT/total, SAT, total))
+logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in test data.'.format(SAT/total, SAT, total))
 
 exit()
 
