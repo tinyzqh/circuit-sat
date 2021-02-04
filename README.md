@@ -28,7 +28,7 @@ The downloading and installation of these libraries are packed in [setup.sh](set
 
 All steps can be done using [bash scripts](scripts/data_gen.sh).
 
-**IMPORTANT**: During abc optimization, some UNSAT graph will be eliminated to a single NEGATIVE output (around 14%). This properties might be useful later.
+**IMPORTANT**: During abc optimization, some UNSAT graph will be eliminated to a single NEGATIVE output (around 14%). This observation might be useful later, also reflect the internal structure of UNSAT graph to some extends.
 
 The optimized AIG looks like as follow:
 
@@ -69,6 +69,7 @@ The functionals and information propagation mechanism of GNN. The implementation
 * ~~Haven't considered the multiple-round information propagations. Such implementation is not used in DVAE. I should turn to NeuronSAT for reference then.~~
 * ~~The network is not optimized for the objective. I should check the NN functionality as soon as possible.~~
 * The learning rate and the hyperparameter setting of optimizer are critical.
+* Should we consider using the hidded state of edges of last step as the input of hidden state updating? Right now we only consider the neighbor nodes' state.
 
 
 
@@ -84,7 +85,7 @@ The functionals and information propagation mechanism of GNN. The implementation
 - [x] Generate SR3to10 optimized AIG dataset.
 - [x] Try small-size problems, *i.e.*, r3 problems.
 - [ ] Try the loss used in *least square gan*.
-- [ ] Invert the hidden state if the edge is inverter.
+- [x] Invert the hidden state if the edge is the invertor.
 - [ ] Try other aggregation approaches.
 
 

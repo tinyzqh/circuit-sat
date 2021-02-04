@@ -165,7 +165,7 @@ def train(epoch):
             train_loss += loss.item()
             # The calculation of True positive, etc seems wrong...
             pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
-                             epoch, loss.item()/len(g_batch), (TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
+                             epoch, loss.item()/len(g_batch), 100.*(TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
             g_batch = []
             y_batch = []
 
@@ -208,7 +208,7 @@ def test(epoch):
                 test_loss += loss.item()
                 # The calculation of True positive, etc seems wrong...
                 pbar.set_description('Test Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
-                                epoch, loss.item()/len(g_batch), (TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
+                                epoch, loss.item()/len(g_batch), 100.*(TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
                 g_batch = []
                 y_batch = []
 

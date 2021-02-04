@@ -16,7 +16,7 @@ parser.add_argument('--only-test', action='store_true', default=False,
 parser.add_argument('--small-train', action='store_true', default=False,
                     help='if True, use a smaller version of train set')
 # model settings
-parser.add_argument('--model', default='DVAEncoder', choices=['DVAEncoder'],help='model to use: DVAE. No other options for now.')
+parser.add_argument('--model', default='DVAEncoder', choices=['DVAEncoder', 'DVAEdgeEncoder'],help='model to use: DVAE. No other options for now.')
 parser.add_argument('--continue-from', type=str, default=None, 
                     help="checkpoint file name to continue training")
 parser.add_argument('--hs', type=int, default=100, metavar='N',
