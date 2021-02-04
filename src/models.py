@@ -231,10 +231,7 @@ class DVAEdgeEncoder(nn.Module):
         self.vid = vid  # ML: Change to flag of including one-hot edge vector
         self.device = None
 
-        if self.vid:
-            self.vs = hs + net
-        else:
-            self.vs = hs
+        self.vs = hs
 
 
         # 0. encoding-related
