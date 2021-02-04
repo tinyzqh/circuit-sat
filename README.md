@@ -28,7 +28,9 @@ The downloading and installation of these libraries are packed in [setup.sh](set
 
 All steps can be done using [bash scripts](scripts/data_gen.sh).
 
-The optimizd AIG looks like as follow:
+**IMPORTANT**: During abc optimization, some UNSAT graph will be eliminated to a single NEGATIVE output (around 14%). This properties might be useful later.
+
+The optimized AIG looks like as follow:
 
 ![optimized AIG](figs/train_graph_id0.png)
 

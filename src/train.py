@@ -75,11 +75,11 @@ else:
 logger.info('Data statistics:')
 logger.info('# of training samples: {:d}'.format(len(train_data)))
 n_SAT, total = cal_postive_percentage(train_data)
-logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in training data.'.format(n_SAT/total, n_SAT, total))
+logger.info('SAT percentage {:.2f} / ({:.2f}, {:.2f}) in training data.'.format(n_SAT/total, n_SAT, total))
 
 logger.info('# of validation samples: {:d}'.format(len(test_data)))#, file=log_file, flush=True)
 n_SAT, total = cal_postive_percentage(test_data)
-logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in test data.'.format(n_SAT/total, n_SAT, total))
+logger.info('SAT percentage {:.2f} / ({:.2f}, {:.2f}) in test data.'.format(n_SAT/total, n_SAT, total))
 
 if args.small_train:
     train_data = train_data[:100]
@@ -218,7 +218,7 @@ def test(epoch):
     logger.info('====> Epoch Test: {:d} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
           epoch, test_loss, acc))
 
-    return test_acc, acc
+    return test_loss, acc
 
 
 
