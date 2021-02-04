@@ -340,9 +340,6 @@ class DVAEdgeEncoder(nn.Module):
                 H_pred_v = torch.cat(H_pred_v, 0)
                 inputs_e = torch.cat(inputs_e, 0)
                 He = propagator_e(inputs_e, H_pred_v)
-                print(He.size())
-                print(size_e)
-                exit()
 
                 ind_list = []
                 ind_start = 0
@@ -359,7 +356,9 @@ class DVAEdgeEncoder(nn.Module):
                     n_e += 1
                     ind_list.append([ind_start, ind_end])
                     ind_start = ind_end
-                He = [He[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
+                He_recover = torch.zeros(size_e)
+                He_recover[non_empty] = He
+                He = [He_recover[inds[0]:inds[1]].view(-1, self.hs) for inds in ind_list]
                 H_pred = [torch.cat([h_pred] + 
                             [self._get_zeros(max_n_pred - len(h_pred), self.vs)], 0).unsqueeze(0) 
                             for h_pred in He]  # pad all to same length
