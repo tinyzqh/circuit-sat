@@ -47,6 +47,14 @@ def load_module_state(model, state_name):
     model.load_state_dict(pretrained_dict)
     return
 
+def cal_postive_percentage(dataset):
+    SAT = 0
+    total = 0
+    for (graph, y) in dataset:
+        if y == 1: SAT += 1
+        total += 1
+    return SAT, total
+
 
 '''Data preprocessing'''
 def load_ENAS_graphs(name, n_types=6, fmt='igraph', rand_seed=0, with_y=True, burn_in=1000):

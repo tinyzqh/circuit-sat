@@ -27,7 +27,6 @@ from models import DVAEncoder
 from config import parser
 
 
-
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 torch.manual_seed(args.seed)
@@ -60,8 +59,6 @@ logger.info('Preparing data...')
 
 train_pkl = os.path.join(args.data_dir, args.data_name + '_train.pkl')
 validation_pkl = os.path.join(args.data_dir, args.data_name + '_validation.pkl')
-# Load pre-stored pickle data
-# Need to consider testing-only case
 if not args.only_test:
     if os.path.isfile(train_pkl):
         with open(train_pkl, 'rb') as f:
@@ -75,22 +72,14 @@ if os.path.isfile(validation_pkl):
 else:
     raise BaseException('Validation data no found..')
 
+logger.info('Data statistics:')
 logger.info('# of training samples: {:d}'.format(len(train_data)))
-
-SAT=0
-total = 0
-for (graph, y) in train_data:
-    if y == 1: SAT += 1
-    total += 1
-logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in training data.'.format(SAT/total, SAT, total))
+n_SAT, total = cal_postive_percentage(train_data)
+logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in training data.'.format(n_SAT/total, n_SAT, total))
 
 logger.info('# of validation samples: {:d}'.format(len(test_data)))#, file=log_file, flush=True)
-SAT=0
-total = 0
-for (graph, y) in test_data:
-    if y == 1: SAT += 1
-    total += 1
-logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in test data.'.format(SAT/total, SAT, total))
+n_SAT, total = cal_postive_percentage(test_data)
+logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in test data.'.format(n_SAT/total, n_SAT, total))
 
 if args.small_train:
     train_data = train_data[:100]
@@ -116,9 +105,11 @@ scheduler = ReduceLROnPlateau(optimizer, 'min', factor=0.1, patience=10, verbose
 model.to(device)
 logger.info(model)
 
+best_acc = 0.0
+start_epoch = 0
 
 if args.continue_from is not None:
-    logger.info('Continue training from {}'.format(args.continue_from))
+    logger.info('Continue training from {}...'.format(args.continue_from))
     ckpt = torch.load(os.path.join(args.res_dir, args.continue_from))
     start_epoch = ckpt['epoch']
     load_module_state(model, ckpt['state_dict'])
@@ -127,11 +118,12 @@ if args.continue_from is not None:
 
 # plot sample train/test graphs
 if not os.path.exists(os.path.join(args.fig_dir, 'train_graph_id0.pdf')):
+    logger.info('Plotting sample graphs...')
     for data in ['train_data', 'test_data']:
         G = [g for g, y in eval(data)[:5]]
         for i, g in enumerate(G):
             name = '{}_graph_id{}'.format(data[:-5], i)
-            plot_DAG(g, args.res_dir, name, data_type=args.data_type)
+            plot_DAG(g, args.fig_dir, name, data_type=args.data_type)
 
 exit()
 
@@ -264,6 +256,7 @@ for epoch in range(start_epoch + 1, args.epochs + 1):
     scheduler.step(train_loss)
     if epoch % args.save_interval == 0:
         print("save current model...")
+        ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
         model_name = os.path.join(args.res_dir, 'model_checkpoint{}.pth'.format(epoch))
         optimizer_name = os.path.join(args.res_dir, 'optimizer_checkpoint{}.pth'.format(epoch))
         scheduler_name = os.path.join(args.res_dir, 'scheduler_checkpoint{}.pth'.format(epoch))
