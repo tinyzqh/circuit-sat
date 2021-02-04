@@ -52,5 +52,6 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
 
 parser.add_argument('--log-dir', type=str, default='log/', help='log folder dir')
 parser.add_argument('--model-dir', type=str, default='model/', help='model folder dir')
+parser.add_argument('--fig-dir', type=str, default='figs/', help='figure folder dir')
 parser.add_argument('--data-dir', type=str, default='data/', help='data folder dir')
 

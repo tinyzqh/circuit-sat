@@ -41,35 +41,33 @@ random.seed(args.seed)
 
 args.exp_name = '{}_{}_hs{:d}_nz{:d}_nr{:d}_lr{:.2e}_b{:d}_bi{:d}_in{:d}'.format(args.data_name, args.model, args.hs, args.nz, 
                             args.n_rounds, args.lr, args.batch_size, int(args.bidirectional), int(args.invert_hidden))
-log_dir = os.path.join(args.exp_name + '.log')
+log_dir = os.path.join(args.log_dir, args.exp_name + '.log')
 logger.add(log_dir)
 logger.info(args)
-exit()
-# log_file = open(os.path.join(args.log_dir, args.data_name + '.log'), 'a+')
-# detail_log_file = open(os.path.join(args.log_dir, args.data_name + '_detail.log'), 'a+')
 writer = SummaryWriter(logdir='runs/lstm')
 
-print(args, file=log_file, flush=True)
-print('Using device:', device, file=log_file, flush=True)
+logger.info('Using device: {}'.format(device))
+
+args.res_dir = os.path.join(args.model_dir, args.exp_name)
+if not os.path.exists(args.res_dir):
+    os.makedirs(args.res_dir)
+args.fig_dir = os.path.join(args.fig_dir, args.data_name)
+if not os.path:
+    os.makedirs(args.fig_dir)
 
 '''Prepare data'''
-args.res_dir = 'results/{}{}'.format(args.data_name, args.save_appendix)
-if not os.path.exists(args.res_dir):
-    os.makedirs(args.res_dir) 
-
-print('Preparing data...', file=log_file, flush=True)
+logger.info('Preparing data...')
 
 train_pkl = os.path.join(args.data_dir, args.data_name + '_train.pkl')
 validation_pkl = os.path.join(args.data_dir, args.data_name + '_validation.pkl')
-
-
 # Load pre-stored pickle data
 # Need to consider testing-only case
-if os.path.isfile(train_pkl):
-    with open(train_pkl, 'rb') as f:
-        train_data, graph_train_args = pickle.load(f)
-else:
-    raise BaseException('Training data not found..')
+if not args.only_test:
+    if os.path.isfile(train_pkl):
+        with open(train_pkl, 'rb') as f:
+            train_data, graph_train_args = pickle.load(f)
+    else:
+        raise BaseException('Training data not found..')
 
 if os.path.isfile(validation_pkl):
     with open(validation_pkl, 'rb') as f:
@@ -77,22 +75,24 @@ if os.path.isfile(validation_pkl):
 else:
     raise BaseException('Validation data no found..')
 
-print('# of training samples: ', len(train_data))#, file=log_file, flush=True)
-# SAT=0
-# total = 0
-# for (graph, y) in train_data:
-#     if y == 1: SAT+=1
-#     total += 1
-# print('SAT percentage %.2f / %.2f %.2f' % (SAT/total, SAT, total))
-#  exit()
+logger.info('# of training samples: {:d}'.format(len(train_data)))
 
-print('# of validation samples: ', len(test_data))#, file=log_file, flush=True)
+SAT=0
+total = 0
+for (graph, y) in train_data:
+    if y == 1: SAT += 1
+    total += 1
+logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in training data.' % (SAT/total, SAT, total))
 
+logger.info('# of validation samples: {:d}'.format(len(test_data)))#, file=log_file, flush=True)
+SAT=0
+total = 0
+for (graph, y) in test_data:
+    if y == 1: SAT += 1
+    total += 1
+logger.info('SAT percentage {:.2f} / {:.2f} {:.2f} in test data.' % (SAT/total, SAT, total))
 
-
-# construct train data
-# if args.no_test:
-#     train_data = train_data + test_data
+exit()
 
 if args.small_train:
     train_data = train_data[:100]
@@ -186,7 +186,7 @@ def train(epoch):
             y_batch = []
 
     train_loss /= len(train_data)
-    acc = (TP + TN) * 1.0 / TOT
+    acc = ((TP + TN) * 1.0 / TOT).item()
 
     print('====> Epoch: {} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
           epoch, train_loss, acc))
