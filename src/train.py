@@ -51,7 +51,7 @@ args.res_dir = os.path.join(args.model_dir, args.exp_name)
 if not os.path.exists(args.res_dir):
     os.makedirs(args.res_dir)
 args.fig_dir = os.path.join(args.fig_dir, args.data_name)
-if not os.path:
+if not os.path.exists(args.fig_dir):
     os.makedirs(args.fig_dir)
 
 '''Prepare data'''
@@ -125,11 +125,8 @@ if not os.path.exists(os.path.join(args.fig_dir, 'train_graph_id0.pdf')):
             name = '{}_graph_id{}'.format(data[:-5], i)
             plot_DAG(g, args.fig_dir, name, data_type=args.data_type)
 
-exit()
-
 '''
 Define train/test functions.
-For these two functions, 
 '''
 def train(epoch):
     model.train()
@@ -165,7 +162,7 @@ def train(epoch):
             FP += (predicted.eq(1) & y_batch.eq(0)).sum().item()
             TOT = TP + TN + FN + FP
 
-            train_loss += float(loss.item())
+            train_loss += loss.item()
             # The calculation of True positive, etc seems wrong...
             pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
                              epoch, loss.item()/len(g_batch), (TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
@@ -175,52 +172,58 @@ def train(epoch):
     train_loss /= len(train_data)
     acc = ((TP + TN) * 1.0 / TOT).item()
 
-    print('====> Epoch: {} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
+    logger.info('====> Epoch Train: {:d} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
           epoch, train_loss, acc))
 
     return train_loss, acc
 
 
-
-def test():
-    # test recon accuracy
+def test(epoch):
     model.eval()
-    encode_times = 10
     test_loss = 0
-    correct = 0
-    total = 0
-    print('Testing begins...')
+    TP, TN, FN, FP = torch.zeros(1).long(), torch.zeros(1).long(), torch.zeros(1).long(), torch.zeros(1).long()
+
     pbar = tqdm(test_data)
     g_batch = []
     y_batch = []
-    for i, (g, y) in enumerate(pbar):
-        g_batch.append(g)
-        y_batch.append(y)
-        if len(g_batch) == args.infer_batch_size or i == len(test_data) - 1:
-            y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
-            g = model._collate_fn(g_batch)
-            g_embedding = model.encode(g_batch)
-            binary_logit = model.classifier(g_embedding)
-            predicted = (binary_logit > 0).to(float)
-            loss = model.loss(binary_logit, y_batch)
-            correct += y_batch.eq(predicted).sum().item()
-            total += len(g_batch)
-            test_loss += loss.item()
+    with torch.no_grad():
+        for i, (g, y) in enumerate(pbar):
+            g_batch.append(g)
+            y_batch.append(y)
+            if len(g_batch) == args.batch_size or i == len(train_data) - 1:
+                y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
+                g = model._collate_fn(g_batch)
+                g_embedding = model.encode(g_batch)
+                binary_logit = model.classifier(g_embedding)
+                predicted = (binary_logit > 0).to(float)
+                loss = model.loss(binary_logit, y_batch)
 
-            pbar.set_description('loss: {:.4f}, Acc: %.3f%% (%d/%d)'.format(test_loss/len(g_batch), 100.*correct/total, correct, total))
+                predicted = (binary_logit > 0).to(float)
+                TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
+                TN += (predicted.eq(0) & y_batch.eq(0)).sum().item()
+                FN += (predicted.eq(0) & y_batch.eq(1)).sum().item()
+                FP += (predicted.eq(1) & y_batch.eq(0)).sum().item()
+                TOT = TP + TN + FN + FP
 
-            g_batch = []
-            y_batch = []
-    test_loss /= len(test_data)
-    test_acc = correct / len(test_data)
-    print('Test average loss: {0}, Accuracy: {1:.4f}'.format(
-        test_loss, correct))
-    return test_loss, test_acc
-    
+                test_loss += loss.item()
+                # The calculation of True positive, etc seems wrong...
+                pbar.set_description('Test Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
+                                epoch, loss.item()/len(g_batch), (TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
+                g_batch = []
+                y_batch = []
+
+    test_loss /= len(train_data)
+    acc = ((TP + TN) * 1.0 / TOT).item()
+
+    logger.info('====> Epoch Test: {:d} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
+          epoch, test_loss, acc))
+
+    return test_acc, acc
+
 
 
 '''Training begins here'''
-min_loss = math.inf  # >= python 3.5
+min_loss = math.inf
 min_loss_epoch = None
 loss_name = os.path.join(args.res_dir, 'train_loss.txt')
 loss_plot_name = os.path.join(args.res_dir, 'train_loss_plot.pdf')
@@ -229,25 +232,14 @@ test_results_name = os.path.join(args.res_dir, 'test_results.txt')
 if os.path.exists(loss_name):
     os.remove(loss_name)
 
-# if args.only_test:
-#     epoch = args.continue_from
-#     #sampled = model.generate_sample(args.sample_number)
-#     #save_latent_representations(epoch)
-#     visualize_recon(300)
-#     #interpolation_exp2(epoch)
-#     #interpolation_exp3(epoch)
-#     #prior_validity(True)
-#     #test()
-#     #smoothness_exp(epoch, 0.1)
-#     #smoothness_exp(epoch, 0.05)
-#     #interpolation_exp(epoch)
-#     pdb.set_trace()
+if args.only_test:
+    test_loss, test_acc = train(epoch)
+    
 
-start_epoch = args.continue_from if args.continue_from is not None else 0
 for epoch in range(start_epoch + 1, args.epochs + 1):
   
     train_loss, train_acc = train(epoch)
-    pred_loss = 0.0
+    test_loss, test_acc = train(epoch)
     with open(loss_name, 'a') as loss_file:
         loss_file.write("{:.2f} {:.2f} \n".format(
             train_loss, 
@@ -255,14 +247,10 @@ for epoch in range(start_epoch + 1, args.epochs + 1):
             ))
     scheduler.step(train_loss)
     if epoch % args.save_interval == 0:
-        print("save current model...")
+        logger.info("Save current model...")
         ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
-        model_name = os.path.join(args.res_dir, 'model_checkpoint{}.pth'.format(epoch))
-        optimizer_name = os.path.join(args.res_dir, 'optimizer_checkpoint{}.pth'.format(epoch))
-        scheduler_name = os.path.join(args.res_dir, 'scheduler_checkpoint{}.pth'.format(epoch))
-        torch.save(model.state_dict(), model_name)
-        torch.save(optimizer.state_dict(), optimizer_name)
-        torch.save(scheduler.state_dict(), scheduler_name)
+        ckpt_name = os.path.join(args.res_dir, 'model_checkpoint{}.pth'.format(epoch))
+        torch.save(ckpt, ckpt_name)
         
         losses = np.loadtxt(loss_name)
         if losses.ndim == 1:
@@ -276,10 +264,12 @@ for epoch in range(start_epoch + 1, args.epochs + 1):
         plt.legend()
         plt.savefig(loss_plot_name)
     
+    if test_acc >= best_acc:
+        best_acc = test_acc
+        ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
+        ckpt_name = os.path.join(args.res_dir, 'model_best.pth'.format(epoch))
+        torch.save(ckpt, ckpt_name)
 
-if not args.no_test:
-    test_loss, test_acc = test()
-    with open(test_results_name, 'a') as result_file:
-        result_file.write("Epoch {} Test recon loss: {} | Acc: {:.4f}".format(
-        epoch, test_loss, test_acc))
-
+ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
+ckpt_name = os.path.join(args.res_dir, 'model_last.pth'.format(epoch))
+torch.save(ckpt, ckpt_name)
