@@ -332,7 +332,7 @@ class DVAEdgeEncoder(nn.Module):
             else:
                 total_e = sum([len(x) for x in H_pred_v])
                 size_e = (total_e, self.hs)
-                non_empty = [i for i, x in enumerate(H_pred_v) if len(h)]
+                non_empty = [i for i, x in enumerate(H_pred_v) if len(x)]
                 H_pred_v = [x for x in H_pred_v if len(x)]
                 H_pred_v = [torch.cat(h_pred_v, 0) for h_pred_v in H_pred_v]
                 H_pred_v = torch.cat(H_pred_v, 0)
