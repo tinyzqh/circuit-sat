@@ -133,9 +133,6 @@ class DVAEncoder(nn.Module):
         if H is None:
             max_n_pred = max([len(x) for x in H_pred])  # maximum number of predecessors
             min_n_pred = min([len(x) for x in H_pred])
-            print(min_n_pred)
-            if min_n_pred == 0:
-                exit()
             if max_n_pred == 0:
                 H = self._get_zero_hidden(len(G))
             else:
@@ -336,10 +333,17 @@ class DVAEdgeEncoder(nn.Module):
             if max_n_pred == 0:
                 H = self._get_zero_hidden(len(G))
             else:
+                non_empty = [i for i, h in enumerate(H_pred) if len(h)]
+                total_e = sum([len(x) for x in H_pred])
+                size_e = (total_e, self.hs)
                 H_pred_v = [torch.cat(h_pred_v, 0) for h_pred_v in H_pred_v]
                 H_pred_v = torch.cat(H_pred_v, 0)
                 inputs_e = torch.cat(inputs_e, 0)
                 He = propagator_e(inputs_e, H_pred_v)
+                print(He.size())
+                print(size_e)
+                exit()
+
                 ind_list = []
                 ind_start = 0
                 n_e = 0
