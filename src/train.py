@@ -38,7 +38,7 @@ else:
 np.random.seed(args.seed)
 random.seed(args.seed)
 
-args.exp_name = 'train_{}_test_{}_hs{:d}_gs{:d}_nr{:d}_lr{:.2e}_b{:d}_bi{:d}_in{:d}'.format(args.train_data, args.test_data, args.model, args.hs, args.gs, 
+args.exp_name = '{}_{}_{}_hs{:d}_gs{:d}_nr{:d}_lr{:.2e}_b{:d}_bi{:d}_in{:d}'.format(args.train_data, args.test_data, args.model, args.hs, args.gs, 
                             args.n_rounds, args.lr, args.batch_size, int(args.bidirectional), int(args.no_invert))
 log_dir = os.path.join(args.log_dir, args.exp_name + '.log')
 logger.add(log_dir)
@@ -50,7 +50,7 @@ logger.info('Using device: {}'.format(device))
 args.res_dir = os.path.join(args.model_dir, args.exp_name)
 if not os.path.exists(args.res_dir):
     os.makedirs(args.res_dir)
-args.fig_dir = os.path.join(args.fig_dir, args.data_name)
+args.fig_dir = os.path.join(args.fig_dir, args.train_data)
 if not os.path.exists(args.fig_dir):
     os.makedirs(args.fig_dir)
 
