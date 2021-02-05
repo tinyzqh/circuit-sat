@@ -93,4 +93,7 @@ Two implementations right now:
 - [ ] Try other aggregation approaches.
 - [ ] Re-implement the graph construnction part. Right now the speed is not satisfactory.
 
+### Results:
+1. Baseline: encoding invertor/non-invertor as one-hot edge vector, model: DVEEncoder. Hidden size: 512. Bi-directional. Batch size. Number of rounds: 10. Acc on training data: 98.19%; Acc on testing data: 95.61%.
+
 
