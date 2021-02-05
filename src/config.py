@@ -5,7 +5,8 @@ parser = argparse.ArgumentParser(description='Train GNN (The encoder part from D
 # general settings
 parser.add_argument('--data-type', default='AIG', choices=['AIG'],
                     help='AIG format')
-parser.add_argument('--data-name', default='sr10', help='graph dataset name')
+parser.add_argument('--train-data', default='sr3to10', help='graph dataset name')
+parser.add_argument('--test-data', default='sr10', help='graph dataset name')
 parser.add_argument('--nvt', type=int, default=4, help='number of different node types, \
                     4 for AIG setting')
 parser.add_argument('--save-interval', type=int, default=10, metavar='N',

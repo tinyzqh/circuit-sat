@@ -38,7 +38,7 @@ else:
 np.random.seed(args.seed)
 random.seed(args.seed)
 
-args.exp_name = '{}_{}_hs{:d}_gs{:d}_nr{:d}_lr{:.2e}_b{:d}_bi{:d}_in{:d}'.format(args.data_name, args.model, args.hs, args.gs, 
+args.exp_name = 'train_{}_test_{}_hs{:d}_gs{:d}_nr{:d}_lr{:.2e}_b{:d}_bi{:d}_in{:d}'.format(args.train_data, args.test_data, args.model, args.hs, args.gs, 
                             args.n_rounds, args.lr, args.batch_size, int(args.bidirectional), int(args.no_invert))
 log_dir = os.path.join(args.log_dir, args.exp_name + '.log')
 logger.add(log_dir)
@@ -57,8 +57,8 @@ if not os.path.exists(args.fig_dir):
 '''Prepare data'''
 logger.info('Preparing data...')
 
-train_pkl = os.path.join(args.data_dir, args.data_name + '_train.pkl')
-validation_pkl = os.path.join(args.data_dir, args.data_name + '_validation.pkl')
+train_pkl = os.path.join(args.data_dir, args.train_data + '_train.pkl')
+validation_pkl = os.path.join(args.data_dir, args.test_data + '_validation.pkl')
 if not args.only_test:
     if os.path.isfile(train_pkl):
         with open(train_pkl, 'rb') as f:
