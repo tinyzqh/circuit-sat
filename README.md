@@ -73,7 +73,8 @@ Two implementations right now:
 * ~~Haven't considered the multiple-round information propagations. Such implementation is not used in DVAE. I should turn to NeuronSAT for reference then.~~
 * ~~The network is not optimized for the objective. I should check the NN functionality as soon as possible.~~
 * The learning rate and the hyperparameter setting of optimizer are critical.
-* Should we consider using the hidded state of edges of last step as the input of hidden state updating? Right now we only consider the neighbor nodes' state.
+* Should we consider using the hidden state of edges of the last step as the input of hidden state updating? Right now we only consider the neighbor nodes' state.
+* I should write a customed Pytorch loader for graph.
 
 
 
@@ -91,9 +92,9 @@ Two implementations right now:
 - [ ] Try the loss used in *least square gan*.
 - [x] Invert the hidden state if the edge is the invertor.
 - [ ] Try other aggregation approaches.
-- [ ] Re-implement the graph construnction part. Right now the speed is not satisfactory.
+- [ ] Re-implement the graph construction part. Right now the speed is not satisfactory.
 
 ### Results:
-1. Baseline: encoding invertor/non-invertor as one-hot edge vector, model: DVEEncoder. Hidden size: 512. Bi-directional. Batch size. Number of rounds: 10. Acc on training data: 98.19%; Acc on testing data: 95.61%.
+1. Baseline: encoding invertor/non-invertor as one-hot edge vector, model: DVEEncoder. Hidden size: 512. Bi-directional. Batch size. The number of rounds: 10. Acc on training data: 98.19%; Acc on testing data: 95.61%.
 
 
