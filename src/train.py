@@ -64,13 +64,13 @@ if not args.only_test:
         with open(train_pkl, 'rb') as f:
             train_data, graph_train_args = pickle.load(f)
     else:
-        raise BaseException('Training data not found..')
+        raise KeyError('Training data not found..')
 
 if os.path.isfile(validation_pkl):
     with open(validation_pkl, 'rb') as f:
         test_data, _ = pickle.load(f)
 else:
-    raise BaseException('Validation data no found..')
+    raise KeyError('Validation data no found..')
 
 logger.info('Data statistics:')
 logger.info('# of training samples: {:d}'.format(len(train_data)))

@@ -76,6 +76,8 @@ Two implementations right now:
 * Should we consider using the hidden state of edges of the last step as the input of hidden state updating? Right now we only consider the neighbor nodes' state.
 * I should write a customed Pytorch loader for graph.
 
+### [Pytorch Geometric](https://github.com/rusty1s/pytorch_geometric)
+I should re-implement the AIG graph using this lib.
 
 
 
