@@ -1,13 +1,13 @@
 # Circuit Representation Learning and Its Applications to VLSI Testing 
 This repo contains the initial codes and docs for circuit representation learning.
 
-So far, the idea is to transform Conjunctive Normal Form (CNF) into And-Inverter Graph (AIG), then using circuit synthesis tools (*e.g.*, abc) to simplify AIG into the optimized AIG. 
+So far, the idea is to transform Conjunctive Normal Form (CNF) into And-Inverter Graph (AIG), then use circuit synthesis tools (*e.g.*, abc) to simplify AIG into the optimized AIG. 
 Then our graph neural networks are constructed based on extracted AIG structure. 
 In this way, we have two kinds of nodes: AND node and NOT (negative) node. Attention mechanism and heterogeneous graph embedding may be considered further.
 
 For the first phase, let's just try whether building an AIG graph and considering in the circuit structure will help solving SAT or not!
 
-After doing survey on the deep learning on EDA, I might just focus on proposing a better GNN for SAT solving. At least the idea of applying GNN to EDA/VLSI testing has been used.
+**IMPORTANT:** After doing some survey on the deep learning on EDA, I might just focus on proposing a better GNN for SAT solving. At least the idea of applying GNN to EDA/VLSI testing has been used.
 
 ## CNF->AIG->Optimzed AIG
 ### Libraries
@@ -28,7 +28,7 @@ The downloading and installation of these libraries are packed in [setup.sh](set
 
 All steps can be done using [bash scripts](scripts/data_gen.sh).
 
-**IMPORTANT**: During abc optimization, some UNSAT graph will be eliminated to a single NEGATIVE output (around 14%). This observation might be useful later, also reflect the internal structure of UNSAT graph to some extends.
+**IMPORTANT**: During abc optimization, some UNSAT graph will be eliminated to a single NEGATIVE output (around 14%). This observation might be useful later, as it reflects the internal structure of UNSAT graph to some extends.
 
 The optimized AIG looks like as follow:
 
@@ -61,7 +61,7 @@ The type values for non-inverter and inverter edge:
 ### GNN design
 The functionals and information propagation mechanism of GNN. The implementation details are listed as follows.
 * Inverter and Un-Inverter edges shouldn't share the weights (GRU cells). Or should we add an edge vector to embed such information? For now, I used one-hot vectors to encode edge information.
-* **Assume the present ordering of vertices is the topological ordering. Need to check later.** seems to be not neccesary.
+* **Assume the present ordering of vertices is the topological ordering. Need to check later.** seems not necessary.
 * Bi-direction is used, following the convention of *NeuronSAT* and *Learning to Solve SAT*.
 * Should we add MLPs before GRU layer, just like what they do in *NeuronSAT*.
   
@@ -87,6 +87,7 @@ I should re-implement the AIG graph using this lib.
 2. How to solve SAT problem in a sensible way?
 3. For the circuit representation learning, should we start from the generative model (learning graph distribution *p(x)*), or start from a supervised task (solving SAT)? From my view, it would be much easier to start from a supervised task.
 4. The size of obtained AIG seems to be quite complicated.
+5. Can we use the gate types as node labels?
 
 ### TO DO
 - [x] Generate SR3to10 optimized AIG dataset.
