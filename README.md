@@ -67,7 +67,13 @@ The functionals and information propagation mechanism of GNN. The implementation
   
 Two implementations right now:
 1. (DVAEEncoder) GNN with one LSTM. Edge types are encoded as one-hot vectors.
-2. (DVAEEdgeEncoder) GNN with two LSTMs. One for vertices with aggeration function, the other for edge.
+2. (DVAEEdgeEncoder) GNN with two LSTMs. One for vertices with aggeration function, the other for the edges.
+
+Can I use the following procedure to get the solution?
+1. The information flows from the INPUT node to the OUTPUT node, and the supervision signal is that whether the problem is SAT or not?
+2. The information flows from the OUTPUT node to the LITERAL nodes, and the supervision signal is that the solution (Obtained from the MiniSAT for example).
+
+During training, the above training procedure is done iteratively. If that works, then I think the contributions are enough! The first iteration is just like the computational flow of combinatorial circuit and the second iteration is just like implication process.
 
 ### Training configuration
 * ~~Haven't considered the multiple-round information propagations. Such implementation is not used in DVAE. I should turn to NeuronSAT for reference then.~~
@@ -78,6 +84,8 @@ Two implementations right now:
 
 ### [Pytorch Geometric](https://github.com/rusty1s/pytorch_geometric)
 I should re-implement the AIG graph using this lib.
+
+This lib seems not contain the implementation of DAG networks.
 
 
 
@@ -96,6 +104,7 @@ I should re-implement the AIG graph using this lib.
 - [x] Invert the hidden state if the edge is the invertor.
 - [ ] Try other aggregation approaches.
 - [ ] Re-implement the graph construction part. Right now the speed is not satisfactory.
+- [ ] Maybe the training can still be done without running many iterations.
 
 ### Results:
 1. Baseline: encoding invertor/non-invertor as one-hot edge vector, model: DVEEncoder. Hidden size: 512. Bi-directional. Batch size. The number of rounds: 10. Acc on training data: 98.19%; Acc on testing data: 95.61%.
