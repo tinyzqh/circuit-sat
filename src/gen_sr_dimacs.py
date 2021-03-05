@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
             # Get the solution for SAT problem
             if opts.save_solutions:
-                solution = get_sat_solutions(iclauses)
+                solution = get_sat_solutions(iclauses, n_vars)
                 write_solutions_to(solution, out_filenames[2])
 
 
