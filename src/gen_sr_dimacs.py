@@ -30,7 +30,7 @@ def write_dimacs_to(n_vars, iclauses, out_filename):
 def mk_out_filenames(opts, n_vars, t):
     prefix = "%s/sr_n=%.4d_pk2=%.2f_pg=%.2f_t=%d" % \
         (opts.out_dir, n_vars, opts.p_k_2, opts.p_geo, t)
-    return ("%s_sat=0.dimacs" % prefix, "%s_sat=1.dimacs" % prefix)
+    return ("%s_sat=0.dimacs" % prefix, "%s_sat=1.dimacs" % prefix, "%s_sat=1.solution" % prefix)
 
 def generate_k_iclause(n, k):
     vs = np.random.choice(n, size=min(n, k), replace=False)
@@ -58,6 +58,21 @@ def gen_iclause_pair(opts, n):
     iclause_sat = [- iclause_unsat[0] ] + iclause_unsat[1:]
     return n, iclauses, iclause_unsat, iclause_sat
 
+def get_sat_solutions(iclauses, n):
+    solver = minisolvers.MinisatSolver()
+    for i in range(n): solver.new_var(dvar=True)
+    for iclause in iclauses: solver.add_clause(iclause)
+    is_sat = solver.solve()
+    if is_sat:
+        return list(solver.get_model())
+    else:
+        raise KeyError('The input iclauses should be SAT.')
+
+def write_solutions_to(solution, out_filename):
+    with open(out_filename, 'w') as f:
+        for x in solution:
+            f.write("%d " % x)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('out_dir', action='store', type=str)
@@ -70,6 +85,9 @@ if __name__ == "__main__":
 
     parser.add_argument('--p_k_2', action='store', dest='p_k_2', type=float, default=0.3)
     parser.add_argument('--p_geo', action='store', dest='p_geo', type=float, default=0.4)
+
+    # Save th solutions
+    parser.add_argument('--save-solutions', action='store', dest='save_solutions', type=int, default=1)
 
     parser.add_argument('--py_seed', action='store', dest='py_seed', type=int, default=None)
     parser.add_argument('--np_seed', action='store', dest='np_seed', type=int, default=None)
@@ -99,4 +117,10 @@ if __name__ == "__main__":
 
             iclauses[-1] = iclause_sat
             write_dimacs_to(n_vars, iclauses, out_filenames[1])
+
+            # Get the solution for SAT problem
+            if opts.save_solutions:
+                solution = get_sat_solutions(iclauses)
+                write_solutions_to(solution, out_filenames[2])
+
 
