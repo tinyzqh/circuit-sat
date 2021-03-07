@@ -36,42 +36,44 @@
 
 
 
-# train
-DIR_AIG="data/aig_raw/train/sr3to4"
-DIR_AIG_ABC="data/aig_abc/train/sr3to4"
-DIR_LOG="log/aig2aig_sr3to4_train.log"
-rm -rf ${DIR_AIG_ABC}
-mkdir -p ${DIR_AIG_ABC}
-
-python src/aig2abcaig.py ${DIR_AIG} ${DIR_AIG_ABC} ${DIR_LOG}
-
-# validation
-DIR_AIG="data/aig_raw/validation/sr5"
-DIR_AIG_ABC="data/aig_abc/validation/sr5"
-DIR_LOG="log/aig2aig_sr5_validation.log"
-rm -rf ${DIR_AIG_ABC}
-mkdir -p ${DIR_AIG_ABC}
-
-python src/aig2abcaig.py ${DIR_AIG} ${DIR_AIG_ABC} ${DIR_LOG}
-
-
-
-
 # # train
-# DIR_AIG_ABC="data/aig_abc/train/sr3"
-# DIR_IGRAPG="data"
-# DATASET_NAME="sr3_train"
+# DIR_AIG="data/aig_raw/train/sr3to4"
+# DIR_AIG_ABC="data/aig_abc/train/sr3to4"
+# DIR_LOG="log/aig2aig_sr3to4_train.log"
+# rm -rf ${DIR_AIG_ABC}
+# mkdir -p ${DIR_AIG_ABC}
 
-
-# python src/aig_parser.py ${DIR_AIG_ABC} ${DIR_IGRAPG} ${DATASET_NAME}
+# python src/aig2abcaig.py ${DIR_AIG} ${DIR_AIG_ABC} ${DIR_LOG}
 
 # # validation
-# DIR_AIG_ABC="data/aig_abc/validation/sr3"
-# DIR_IGRAPG="data"
-# DATASET_NAME="sr3_validation"
+# DIR_AIG="data/aig_raw/validation/sr5"
+# DIR_AIG_ABC="data/aig_abc/validation/sr5"
+# DIR_LOG="log/aig2aig_sr5_validation.log"
+# rm -rf ${DIR_AIG_ABC}
+# mkdir -p ${DIR_AIG_ABC}
+
+# python src/aig2abcaig.py ${DIR_AIG} ${DIR_AIG_ABC} ${DIR_LOG}
 
 
-# python src/aig_parser.py ${DIR_AIG_ABC} ${DIR_IGRAPG} ${DATASET_NAME}
+
+
+# train
+DIR_AIG_ABC="data/aig_abc/train/sr3"
+DIR_IGRAPG="data"
+DATASET_NAME="sr3_train"
+DIR_SOLUTION="data/dimacs/train/sr3to4"
+
+
+python src/aig_parser.py ${DIR_AIG_ABC} ${DIR_IGRAPG} ${DATASET_NAME} --aig_solution_dir ${DIR_SOLUTION}
+
+# validation
+DIR_AIG_ABC="data/aig_abc/validation/sr3"
+DIR_IGRAPG="data"
+DATASET_NAME="sr3_validation"
+DIR_SOLUTION="data/dimacs/validation/sr5"
+
+
+python src/aig_parser.py ${DIR_AIG_ABC} ${DIR_IGRAPG} ${DATASET_NAME} --aig_solution_dir ${DIR_SOLUTION}
 
 
 
