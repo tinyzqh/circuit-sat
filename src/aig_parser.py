@@ -33,7 +33,7 @@ def aig2graph(folder_name, solution_folder_name, format='pyg', n_vtypes=4, n_ety
         aag_path = join(folder_name, filename)
         solution = None
         if solution_folder_name:
-            solution_path = join(solution_folder_name, splitext(filename)[0] + '.solution')
+            solution_path = join(solution_folder_name, splitext(filename)[0][:-4] + '.solution')
             with open(solution_path, 'r') as f:
                 solution = f.read().strip().split(' ')
                 print(solution)
