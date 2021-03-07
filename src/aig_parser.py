@@ -246,7 +246,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
     # add_order_info(g) # What's the purpose of this info?
 
     # to be able to use igraph methods in DVAE models
-    graph.vs = [{'type': t} for t in node_types2]
+    g.vs = [{'type': t} for t in node_types2]
 
     # Add Literal labels
     if solution:
