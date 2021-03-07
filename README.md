@@ -96,6 +96,7 @@ This lib seems not contain the implementation of DAG networks.
 3. For the circuit representation learning, should we start from the generative model (learning graph distribution *p(x)*), or start from a supervised task (solving SAT)? From my view, it would be much easier to start from a supervised task.
 4. The size of obtained AIG seems to be quite complicated.
 5. Can we use the gate types as node labels?
+6. Check whether the solutions for the original SAT problems are also the ones for the optimized AIG problems.
 
 ### TO DO
 - [x] Generate SR3to10 optimized AIG dataset.
