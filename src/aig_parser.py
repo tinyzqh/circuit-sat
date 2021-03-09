@@ -269,7 +269,7 @@ if __name__ == '__main__':
     print('AIG graph data size: %d' % len(g_list))
 
 
-    pkl_name = join(opts.igraph_dir, opts.dataset_name + '.pkl')
+    pkl_name = join(opts.graph_dir, opts.dataset_name + '.pkl')
     print('Saving Graph dataset to %s' % pkl_name)
     with open(pkl_name, 'wb') as f:
         pickle.dump((g_list, graph_args), f)
