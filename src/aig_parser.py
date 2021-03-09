@@ -36,7 +36,7 @@ def aig2graph(folder_name, solution_folder_name, format='pyg', n_vtypes=4, n_ety
             solution_path = join(solution_folder_name, splitext(filename)[0][:-4] + '.solution')
             if "_sat=1" in solution_path:
                 with open(solution_path, 'r') as f:
-                    solution = f.read().strip().split(' ')
+                    solution = [int(x_value) for x_value in f.read().strip().split(' ')]
         with open(aag_path, 'r') as f:
             lines = f.readlines()
         if format == 'igraph':
@@ -236,7 +236,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
 
     x = torch.cat(x, dim=0).float()
     edge_index = torch.tensor(edge_index).t().contiguous()
-    print(edge_index)
+    # print(edge_index)
     edge_attr = torch.cat(edge_attr, dim=0).float()
 
     g = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
