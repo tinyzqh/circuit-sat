@@ -58,9 +58,9 @@
 
 
 # train
-DIR_AIG_ABC="data/aig_abc/train/sr3"
+DIR_AIG_ABC="data/aig_abc/train/sr3to4"
 DIR_IGRAPG="data"
-DATASET_NAME="sr3_train"
+DATASET_NAME="sr3to4_train"
 DIR_SOLUTION="data/dimacs/train/sr3to4"
 
 
