@@ -241,19 +241,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
 
     g = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
 
-    print(g)
-    print(g.keys)
-    print(g['x'])
-    for key, item in g:
-        print("{} found in graph".format(key))
-    print(g.num_nodes)
-    print(g.num_edges)
-    print(g.num_node_features)
-    print(g.is_directed())
-    print(g.contains_isolated_nodes())
-    print(g.contains_self_loops())
-    exit()
-    # add_order_info(g) # What's the purpose of this info?
+    add_order_info(g) # What's the purpose of this info?
 
     # to be able to use igraph methods in DVAE models
     g.vs = [{'type': t} for t in node_types2]
@@ -261,6 +249,8 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
     # Add Literal labels
     if solution:
         g.y = torch.tensor(solution).float()
+        print(g.y)
+        exit()
 
     return g, n_variables+2
 
