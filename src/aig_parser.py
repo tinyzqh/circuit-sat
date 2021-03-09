@@ -222,21 +222,20 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
         input1_idx = int(line[1]) // 2
         sign1_idx = int(line[1]) % 2
         
-        edge_index += [input1_idx, output_idx]
+        edge_index += [[input1_idx, output_idx]]
         edge_attr += [one_hot(sign1_idx, n_etypes)]
 
         # Second edge
         input2_idx = int(line[2]) // 2
         sign2_idx = int(line[2]) % 2
-        edge_index += [input2_idx, output_idx]
+        edge_index += [[input2_idx, output_idx]]
         edge_attr += [one_hot(sign2_idx, n_etypes)]
     
-    edge_index += [index_final_and, n_variables+1]
+    edge_index += [[index_final_and, n_variables+1]]
     edge_attr += [one_hot(sign_final, n_etypes)]
 
     x = torch.cat(x, dim=0).float()
-    print(edge_index)
-    edge_index = torch.tensor(edge_index).t().contiguous()
+    edge_index = torch.cat(edge_index, dim=0).t().contiguous()
     print(edge_index)
     edge_attr = torch.cat(edge_attr, dim=0).float()
 
