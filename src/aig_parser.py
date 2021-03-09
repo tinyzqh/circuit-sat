@@ -235,6 +235,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
     edge_attr += [one_hot(sign_final, n_etypes)]
 
     x = torch.cat(x, dim=0).float()
+    print(edge_index)
     edge_index = torch.tensor(edge_index).t().contiguous()
     print(edge_index)
     edge_attr = torch.cat(edge_attr, dim=0).float()
