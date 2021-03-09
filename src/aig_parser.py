@@ -37,9 +37,6 @@ def aig2graph(folder_name, solution_folder_name, format='pyg', n_vtypes=4, n_ety
             if "_sat=1" in solution_path:
                 with open(solution_path, 'r') as f:
                     solution = f.read().strip().split(' ')
-                    print(solution)
-                    print(type(solution))
-                    exit()
         with open(aag_path, 'r') as f:
             lines = f.readlines()
         if format == 'igraph':
@@ -159,7 +156,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
         * Inverter: 1;
         * Edges from the virtual starting node to literal input nodes: 2.
     '''
-
+    print(lines)
     header = lines[0].strip().split(" ")
     assert header[0] == 'aag', 'The header of AIG file is wrong.'
     # “M”, “I”, “L”, “O”, “A” separated by spaces.
@@ -243,6 +240,18 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
 
     g = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
 
+    print(g)
+    print(g.keys)
+    print(g['x'])
+    for key, item in g:
+        print("{} found in graph".format(key))
+    print(g.num_nodes)
+    print(g.num_edges)
+    print(g.num_node_features)
+    print(g.is_directed())
+    print(g.contains_isolated_nodes())
+    print(g.contains_self_loops())
+    exit()
     # add_order_info(g) # What's the purpose of this info?
 
     # to be able to use igraph methods in DVAE models
