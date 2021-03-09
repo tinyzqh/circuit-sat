@@ -34,6 +34,9 @@ def aig2graph(folder_name, solution_folder_name, format='pyg', n_vtypes=4, n_ety
         solution = None
         if solution_folder_name:
             solution_path = join(solution_folder_name, splitext(filename)[0][:-4] + '.solution')
+            if solution_path == "data/dimacs/train/sr3to4/sr_n=0003_pk2=0.30_pg=0.40_t=5000_sat=1.solution":
+                print(filename)
+                print(aag_path)
             if "_sat=1" in solution_path:
                 with open(solution_path, 'r') as f:
                     solution = [int(x_value) for x_value in f.read().strip().split(' ')]
