@@ -183,7 +183,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
         # Add Literal node
         x += [one_hot(1, n_vtypes)]
         node_types2 += [1]
-        edge_index += [0, i+1]
+        edge_index += [[0, i+1]]
         edge_attr += [one_hot(2, n_etypes)]
     for i in range(n_inputs+1, n_inputs + 1 + n_and):
         # Add AND node
