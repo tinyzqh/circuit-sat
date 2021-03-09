@@ -60,7 +60,7 @@ def aig2graph(folder_name, solution_folder_name, format='pyg', n_vtypes=4, n_ety
     ng = len(g_list)
     print('# node types: %d' % graph_args.num_vertex_type)
     print('maximum # nodes: %d' % graph_args.max_n)
-    print('# AIG graph: %d' % ng)
+    print('# graph: %d' % ng)
     return g_list, graph_args
 
 def decode_aag_to_igraph(lines, solution=None):
@@ -156,7 +156,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
         * Inverter: 1;
         * Edges from the virtual starting node to literal input nodes: 2.
     '''
-    print(lines)
+    # print(lines)
     header = lines[0].strip().split(" ")
     assert header[0] == 'aag', 'The header of AIG file is wrong.'
     # “M”, “I”, “L”, “O”, “A” separated by spaces.
@@ -248,9 +248,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
 
     # Add Literal labels
     if solution:
-        g.y = torch.tensor(solution).float()
-        print(g.y)
-        exit()
+        g.y = torch.tensor(solution, dtype=torch.long)
 
     return g, n_variables+2
 
