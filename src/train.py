@@ -44,7 +44,7 @@ args.exp_name = '{}_{}_{}_hs{:d}_gs{:d}_nr{:d}_lr{:.2e}_b{:d}_bi{:d}_in{:d}'.for
 log_dir = os.path.join(args.log_dir, args.exp_name + '.log')
 logger.add(log_dir)
 logger.info(args)
-writer = SummaryWriter(logdir='runs/lstm')
+writer = SummaryWriter(logdir='runs/dvaencoder_pyg')
 
 logger.info('Using device: {}'.format(device))
 

@@ -33,7 +33,7 @@ class DVAEncoder_PYG(nn.Module):
         (Removed for now) num_layers (integer, default: 1) - # layers of GRU
     '''
     def __init__(self, max_n, nvt=4, net=3, hs=100, bidirectional=True):
-        super(DVAEncoder, self).__init__()
+        super(DVAEncoder_PYG, self).__init__()
         self.max_n = max_n # maximum number of vertices
         self.nvt = nvt  # number of vertex types
         self.net = net  # number of edge types
