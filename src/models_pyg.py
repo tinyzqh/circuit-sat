@@ -217,7 +217,7 @@ class DVAEncoder_PYG(nn.Module):
         return Hg
 
     
-    def _get_literal_state(self, G):
+    def solve(self, G):
         # get the literal state
         HLiteral = []
         solutions = []
