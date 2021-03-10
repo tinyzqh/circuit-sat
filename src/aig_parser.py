@@ -240,6 +240,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
     edge_attr = torch.cat(edge_attr, dim=0).float()
 
     g = Data(x=x, edge_index=edge_index, edge_attr=edge_attr)
+    g.num_literals = n_inputs
 
     add_order_info(g) # What's the purpose of this info?
 
