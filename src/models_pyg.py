@@ -217,7 +217,7 @@ class DVAEncoder_PYG(nn.Module):
         return Hg
 
     
-    def solve(self, G):
+    def _get_literal_state(self, G):
         # get the literal state
         HLiteral = []
         solutions = []
@@ -227,12 +227,7 @@ class DVAEncoder_PYG(nn.Module):
                     HLiteral.append(g.vs[idx_literal+1]['H_backward'])
                     solutions.append(g.solution[idx_literal])
         HLiteral = torch.cat(HLiteral, 0)
-        print(solutions)
         solutions = torch.tensor(solutions, dtype=torch.long)
-        print(solutions)
-        exit()
-
-
 
         return HLiteral, solutions
 
@@ -264,7 +259,7 @@ class DVAEncoder_PYG(nn.Module):
     def forward(self, G):
         Hg = self.encode(G)
         binary_logit = self.graph_classifier(Hg)
-        HLiteral, solutions = self.solve(G)
+        HLiteral, solutions = self._get_literal_state(G)
         predicted_solutions  = self.literal_classifier(HLiteral)
 
         return binary_logit, predicted_solutions, solutions
