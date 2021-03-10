@@ -227,7 +227,11 @@ class DVAEncoder_PYG(nn.Module):
                     HLiteral.append(g.vs[idx_literal+1]['H_backward'])
                     solutions.append(g.solution[idx_literal])
         HLiteral = torch.cat(HLiteral, 0)
-        solutions = torch.cat(solutions, 0)
+        print(solutions)
+        solutions = torch.tensor(solutions, dtype=torch.long)
+        print(solutions)
+        exit()
+
 
 
         return HLiteral, solutions
