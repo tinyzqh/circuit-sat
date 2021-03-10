@@ -64,12 +64,16 @@ if not args.only_test:
     if os.path.isfile(train_pkl):
         with open(train_pkl, 'rb') as f:
             train_data, graph_train_args = pickle.load(f)
+        logger.info('Training dateset paremeters:')
+        logger.info(graph_train_args)
     else:
         raise KeyError('Training data not found..')
 
 if os.path.isfile(validation_pkl):
     with open(validation_pkl, 'rb') as f:
         test_data, graph_test_args = pickle.load(f)
+        logger.info('Testing dateset paremeters:')
+        logger.info(graph_test_args)
 else:
     raise KeyError('Validation data no found..')
 
