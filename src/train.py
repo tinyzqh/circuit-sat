@@ -69,7 +69,7 @@ if not args.only_test:
 
 if os.path.isfile(validation_pkl):
     with open(validation_pkl, 'rb') as f:
-        test_data, _ = pickle.load(f)
+        test_data, graph_test_args = pickle.load(f)
 else:
     raise KeyError('Validation data no found..')
 
@@ -246,8 +246,9 @@ if args.only_test:
     
 
 for epoch in range(start_epoch + 1, args.epochs + 1):
-  
-    # train_loss, train_acc = train(epoch)
+    model.max_n = graph_test_args.max_n
+    train_loss, train_acc = train(epoch)
+    model.max_n = graph_test_args.max_n
     test_loss, test_acc = test(epoch)
     with open(loss_name, 'a') as loss_file:
         loss_file.write("{:.2f} {:.2f} \n".format(

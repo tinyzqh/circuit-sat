@@ -123,11 +123,7 @@ class DVAEncoder_PYG(nn.Module):
     def _propagate_to(self, G, v, propagator, H=None, reverse=False):
         # propagate messages to vertex index v for all graphs in G
         # return the new messages (states) at v
-        print('X.shape', G[0].x.shape[0])
-        print(v)
         G = [g.to(self.get_device()) for g in G if g.x.shape[0] > v]
-        if len(G) == 0:
-            print('Stop')
 
         if len(G) == 0:
             return
