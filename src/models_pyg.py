@@ -32,7 +32,7 @@ class DVAEncoder_PYG(nn.Module):
                                 and the corresponding edge vector right now. TODO: check whether we need this flag.
         (Removed for now) num_layers (integer, default: 1) - # layers of GRU
     '''
-    def __init__(self, nvt=4, net=3, hs=100, bidirectional=True):
+    def __init__(self, max_n, nvt=4, net=3, hs=100, bidirectional=True):
         super(DVAEncoder, self).__init__()
         self.max_n = max_n # maximum number of vertices
         self.nvt = nvt  # number of vertex types

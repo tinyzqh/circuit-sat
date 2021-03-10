@@ -100,7 +100,10 @@ if args.small_train:
 #         vid=args.no_invert
 #         )
 model = DVAEncoder_PYG(
-    nvt=4, net=3, hs=100, bidirectional=True
+    graph_train_args.max_n, 
+    graph_train_args.num_vertex_type, 
+    graph_train_args.num_edge_type,
+    hs=args.hs, bidirectional=True
 )
 # optimizer and scheduler
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
