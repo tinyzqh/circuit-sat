@@ -251,8 +251,8 @@ class DVAEncoder_PYG(nn.Module):
     def graph_loss(self, binary_logit, y):        
         return self.sat_loss(binary_logit, y)
     
-    def literal_loss(self, predicted, solutions):
-        return self.solution_loss(predicted, solutions)
+    def solution_loss(self, predicted, solutions):
+        return self.literal_loss(predicted, solutions)
 
 
     def forward(self, G):
