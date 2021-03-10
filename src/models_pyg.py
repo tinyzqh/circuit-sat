@@ -207,6 +207,7 @@ class DVAEncoder_PYG(nn.Module):
         for g in G:
             print(g.vs[g.x.shape[0] - 1])
             hg = g.vs[g.x.shape[0] - 1]['H_forward']
+            exit()
             if bidir:  # decoding never uses backward propagation
                 hg_b = g.vs[0]['H_backward']
                 hg = torch.cat([hg, hg_b], 1)
