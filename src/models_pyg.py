@@ -123,7 +123,12 @@ class DVAEncoder_PYG(nn.Module):
     def _propagate_to(self, G, v, propagator, H=None, reverse=False):
         # propagate messages to vertex index v for all graphs in G
         # return the new messages (states) at v
+        print('X.shape', G[0].x.shape[0])
+        print(v)
         G = [g.to(self.get_device()) for g in G if g.x.shape[0] > v]
+        if len(G) == 0:
+            print('Stop')
+
         if len(G) == 0:
             return
         if H is not None:
@@ -183,8 +188,11 @@ class DVAEncoder_PYG(nn.Module):
             prop_order = range(v, -1, -1)
         else:
             prop_order = range(v, self.max_n)
+        print(G[0])
+        print('Starting from {} node.'.format(v))
         Hv = self._propagate_to(G, v, propagator, H0, reverse=reverse)  # the initial vertex
         for v_ in prop_order[1:]:
+            print('{} node.'.format(v_))
             self._propagate_to(G, v_, propagator, reverse=reverse)  # ML: For the with predecessors, do not consider the previous states of this nodes.
         return Hv
 
