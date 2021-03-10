@@ -8,7 +8,7 @@ import numpy as np
 import igraph
 import pdb
 import copy
-from torch_geometric import Data
+from torch_geometric.data import Data
 
 '''
     DAG Variational Autoencoder (D-VAE).
