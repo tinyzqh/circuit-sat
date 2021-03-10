@@ -156,8 +156,7 @@ class DVAEncoder_PYG(nn.Module):
             gate, mapper = self.gate_forward, self.mapper_forward
 
         H_pred = [[torch.cat([x[i], y[i:i+1]], 1) for i in range(len(x))] for x, y in zip(H_pred, E_pred)]
-        # print(H_pred[0].size())
-        # exit()
+
 
         # if h is not provided, use gated sum of v's predecessors' states as the input hidden state
         if H is None:
@@ -184,11 +183,8 @@ class DVAEncoder_PYG(nn.Module):
             prop_order = range(v, -1, -1)
         else:
             prop_order = range(v, self.max_n)
-        print(G[0])
-        print('Starting from {} node.'.format(v))
         Hv = self._propagate_to(G, v, propagator, H0, reverse=reverse)  # the initial vertex
         for v_ in prop_order[1:]:
-            print('{} node.'.format(v_))
             self._propagate_to(G, v_, propagator, reverse=reverse)  # ML: For the with predecessors, do not consider the previous states of this nodes.
         return Hv
 
