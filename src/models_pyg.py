@@ -224,7 +224,7 @@ class DVAEncoder_PYG(nn.Module):
         for g in G:
             if g.solution is not None:
                 for idx_literal in range(g.num_literals):
-                    HLiteral.append(g.vs[idx_literal+1])['H_backward']
+                    HLiteral.append(g.vs[idx_literal+1]['H_backward'])
                     solutions.append([g.solution[idx_literal]])
         HLiteral = torch.cat(HLiteral, 0)
         solutions = torch.cat(solutions, 0)
