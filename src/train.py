@@ -156,7 +156,7 @@ def train(epoch):
             binary_logit, predicted_solutions, solutions = model(g_batch)
             y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
             # loss= model.loss(binary_logit, y_batch)
-            loss = model.graph_loss(binary_logit, y_batch) + model.solution_loss(predicted_solutions, solutions)
+            loss = model.graph_loss(binary_logit, y_batch) + model.literal_loss(predicted_solutions, solutions)
 
             
             loss.backward()
@@ -202,11 +202,10 @@ def test(epoch):
             y_batch.append(y)
             if len(g_batch) == args.batch_size or i == len(train_data) - 1:
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
-                g = model._collate_fn(g_batch)
-                g_embedding = model.encode(g_batch)
-                binary_logit = model.classifier(g_embedding)
+                g_batch = model._collate_fn(g_batch)
+                binary_logit, predicted_solutions, solutions = model(g_batch)
                 predicted = (binary_logit > 0).to(float)
-                loss = model.loss(binary_logit, y_batch)
+                loss = model.graph_loss(binary_logit, y_batch)
 
                 predicted = (binary_logit > 0).to(float)
                 TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()

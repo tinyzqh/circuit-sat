@@ -90,7 +90,7 @@ class DVAEncoder_PYG(nn.Module):
 
         # 4. LLoss functions
         self.sat_loss = nn.BCEWithLogitsLoss()
-        self.solution_loss = nn.BCEWithLogitsLoss()
+        self.literal_loss = nn.BCEWithLogitsLoss()
 
     def get_device(self):
         if self.device is None:
@@ -251,9 +251,8 @@ class DVAEncoder_PYG(nn.Module):
     def graph_loss(self, binary_logit, y):        
         return self.sat_loss(binary_logit, y)
     
-    def solution_loss(self, predicted, solutions):
+    def literal_loss(self, predicted, solutions):
         return self.solution_loss(predicted, solutions)
-        
 
 
     def forward(self, G):
