@@ -250,8 +250,9 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
 
     # Add Literal labels
     if solution:
-        g.solution = True
-        g.y = torch.tensor(solution, dtype=torch.long)
+        g.solution = torch.tensor(solution, dtype=torch.long)
+    else:
+        g.solution = None
 
     return g, n_variables+2
 
