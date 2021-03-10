@@ -84,7 +84,7 @@ class DVAEncoder_PYG(nn.Module):
         # 3. bidir-related, to unify sizes
         if self.bidir:
             self.hg_unify = nn.Sequential(
-                    nn.Linear(self.hs * 2 * num_layers, self.gs), 
+                    nn.Linear(self.hs * 2, self.gs), 
                     nn.BatchNorm1d(self.gs)
                 )
 
