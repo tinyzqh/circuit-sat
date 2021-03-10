@@ -192,12 +192,11 @@ class DVAEncoder_PYG(nn.Module):
     def _get_vertex_state(self, G, v):
         # get the vertex states at v
         Hv = []
-        istr = str(self.num_layers - 1)
         for g in G:
             if v >= g.x.shape[0]:
                 hv = self._get_zero_hidden()
             else:
-                hv = g.vs[v]['H_forward'+istr]
+                hv = g.vs[v]['H_forward']
             Hv.append(hv)
         Hv = torch.cat(Hv, 0)
         return Hv
@@ -206,6 +205,7 @@ class DVAEncoder_PYG(nn.Module):
         # get the graph states
         Hg = []
         for g in G:
+            print(g.vs[g.x.shape[0] - 1])
             hg = g.vs[g.x.shape[0] - 1]['H_forward']
             if bidir:  # decoding never uses backward propagation
                 hg_b = g.vs[0]['H_backward']
