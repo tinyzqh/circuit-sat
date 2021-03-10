@@ -246,14 +246,12 @@ def decode_aag_to_pyg(lines, solution, n_vtypes, n_etypes):
 
     # to be able to use igraph methods in DVAE models
     g.vs = [{'type': t} for t in node_types2]
-    # g.num_literal = n_inputs
 
     # Add Literal labels
+    g.solution = None
     if solution:
         g.solution = torch.tensor(solution, dtype=torch.long)
-    else:
-        g.solution = None
-
+        
     return g, n_variables+2
 
 

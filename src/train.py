@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from util import *
 from models import *
+from models_pyg import *
 
 from config import parser
 
@@ -88,16 +89,19 @@ if args.small_train:
 
 '''Prepare the model'''
 # model
-model = eval(args.model)(
-        graph_train_args.max_n, 
-        graph_train_args.num_vertex_type, 
-        graph_train_args.num_edge_type,
-        hs=args.hs, 
-        gs=args.gs,
-        n_rounds=args.n_rounds,
-        bidirectional=args.bidirectional,
-        vid=args.no_invert
-        )
+# model = eval(args.model)(
+#         graph_train_args.max_n, 
+#         graph_train_args.num_vertex_type, 
+#         graph_train_args.num_edge_type,
+#         hs=args.hs, 
+#         gs=args.gs,
+#         n_rounds=args.n_rounds,
+#         bidirectional=args.bidirectional,
+#         vid=args.no_invert
+#         )
+model = DVAEncoder_PYG(
+    nvt=4, net=3, hs=100, bidirectional=True
+)
 # optimizer and scheduler
 optimizer = optim.Adam(model.parameters(), lr=args.lr)
 scheduler = ReduceLROnPlateau(optimizer, 'min', factor=0.1, patience=10, verbose=True)
@@ -145,9 +149,12 @@ def train(epoch):
             batch_idx += 1
             optimizer.zero_grad()
             g_batch = model._collate_fn(g_batch)
-            binary_logit = model(g_batch)
+            # binary_logit = model(g_batch)
+            binary_logit, predicted_solutions, solutions = model(g_batch)
             y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
-            loss= model.loss(binary_logit, y_batch)
+            # loss= model.loss(binary_logit, y_batch)
+            loss = model.graph_loss(binary_logit, y_batch) + model.solution_loss(predicted_solutions, solutions)
+
             
             loss.backward()
             optimizer.step()
