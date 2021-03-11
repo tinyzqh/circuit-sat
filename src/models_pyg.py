@@ -254,10 +254,10 @@ class DVAEncoder_PYG(nn.Module):
             H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
                                  H0=self._get_graph_state(G), reverse=True)
         for _ in range(self.nrounds - 1):
-            H_vf = self._propagate_from(G, 0, self.grue_forward_v, self.grue_forward_e, H0=H_vf,
+            H_vf = self._propagate_from(G, 0, self.grue_forward, H0=H_vf,
                              reverse=False)
             if self.bidir:
-                H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward_v, self.grue_backward_e, H0=H_vb,
+                H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, H0=H_vb,
                                  reverse=True)
 
         Hg = self._get_graph_state(G, self.bidir)
