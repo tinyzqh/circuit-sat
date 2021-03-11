@@ -230,6 +230,9 @@ class DVAEncoder_PYG(nn.Module):
 
         return HLiteral, solutions
 
+    def solve(self, predictions_digit):
+        pass
+
 
 
     def encode(self, G):
