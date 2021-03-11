@@ -160,8 +160,8 @@ class DVAEncoder_PYG(nn.Module):
                 H_pred += [[g.vs[x][H_name] for x in np_idx]]
                 E_pred += [g.edge_attr[np_idx]]
                 if H_name in g.vs[v]:
-                    H_pred[-1] += g.vs[v][H_name]
-                    E_pred[-1] += self._get_zeros(1, self.net)
+                    H_pred[-1] += [g.vs[v][H_name]]
+                    E_pred[-1] += [self._get_zeros(1, self.net)]
             gate, mapper = self.gate_forward, self.mapper_forward
 
         H_pred = [[torch.cat([x[i], y[i:i+1]], 1) for i in range(len(x))] for x, y in zip(H_pred, E_pred)]
