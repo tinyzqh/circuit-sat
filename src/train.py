@@ -107,6 +107,7 @@ model = DVAEncoder_PYG(
     graph_train_args.max_n, 
     graph_train_args.num_vertex_type, 
     graph_train_args.num_edge_type,
+    nrounds=args.num_rounds,
     hs=args.hs, bidirectional=True
 )
 # optimizer and scheduler

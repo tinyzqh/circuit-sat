@@ -32,13 +32,14 @@ class DVAEncoder_PYG(nn.Module):
                                 and the corresponding edge vector right now. TODO: check whether we need this flag.
         (Removed for now) num_layers (integer, default: 1) - # layers of GRU
     '''
-    def __init__(self, max_n, nvt=4, net=3, hs=100, n_rounds=5, bidirectional=True):
+    def __init__(self, max_n, nvt=4, net=3, hs=100, nrounds=5, bidirectional=True):
         super(DVAEncoder_PYG, self).__init__()
         self.max_n = max_n # maximum number of vertices
         self.nvt = nvt  # number of vertex types
         self.net = net  # number of edge types
         self.hs = hs  # hidden state size of each vertex
         self.gs = hs  # size of graph state
+        self.nrounds = nrounds
         self.bidir = bidirectional  # whether to use bidirectional encoding
         self.device = None
 
@@ -250,7 +251,7 @@ class DVAEncoder_PYG(nn.Module):
         if self.bidir:
             H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
                                  H0=self._get_graph_state(G), reverse=True)
-        for _ in range(self.n_rounds - 1):
+        for _ in range(self.nrounds - 1):
             H_vf = self._propagate_from(G, 0, self.grue_forward_v, self.grue_forward_e, H0=H_vf,
                              reverse=False)
             if self.bidir:

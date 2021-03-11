@@ -26,7 +26,7 @@ parser.add_argument('--gs', type=int, default=100, metavar='N',
                     help='number of dimensions of latent vectors z')
 parser.add_argument('--bidirectional', action='store_true', default=False,
                     help='whether to use bidirectional encoding')
-parser.add_argument('--n-rounds', type=int, default=10, metavar='N',
+parser.add_argument('--num-rounds', type=int, default=10, metavar='N',
                     help='The number of rounds for information propagation.')
 parser.add_argument('--no-invert', action='store_true', default=False,
                     help='invert the hidden state for inverter or use one-hot vector.')
