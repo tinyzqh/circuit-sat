@@ -32,7 +32,7 @@ class DVAEncoder_PYG(nn.Module):
                                 and the corresponding edge vector right now. TODO: check whether we need this flag.
         (Removed for now) num_layers (integer, default: 1) - # layers of GRU
     '''
-    def __init__(self, max_n, nvt=4, net=3, hs=100, bidirectional=True):
+    def __init__(self, max_n, nvt=4, net=3, hs=100, n_rounds=5, bidirectional=True):
         super(DVAEncoder_PYG, self).__init__()
         self.max_n = max_n # maximum number of vertices
         self.nvt = nvt  # number of vertex types
@@ -142,6 +142,9 @@ class DVAEncoder_PYG(nn.Module):
                 np_idx = g.edge_index[1][np_idx]
                 H_pred += [[g.vs[x][H_name] for x in np_idx]]
                 E_pred += [g.edge_attr[np_idx]]
+                if H_name in g.vs[v]:
+                    H_pred[-1] += g.vs[v][H_name]
+                    E_pred[-1] += self._get_zeros(1, self.net)
             gate, mapper = self.gate_backward, self.mapper_backward
         else:
             H_name = 'H_forward'
@@ -153,6 +156,9 @@ class DVAEncoder_PYG(nn.Module):
                 np_idx = g.edge_index[0][np_idx]
                 H_pred += [[g.vs[x][H_name] for x in np_idx]]
                 E_pred += [g.edge_attr[np_idx]]
+                if H_name in g.vs[v]:
+                    H_pred[-1] += g.vs[v][H_name]
+                    E_pred[-1] += self._get_zeros(1, self.net)
             gate, mapper = self.gate_forward, self.mapper_forward
 
         H_pred = [[torch.cat([x[i], y[i:i+1]], 1) for i in range(len(x))] for x, y in zip(H_pred, E_pred)]
@@ -239,11 +245,17 @@ class DVAEncoder_PYG(nn.Module):
         # encode graphs G into latent vectors
         if type(G) != list:
             G = [G]
-        self._propagate_from(G, 0, self.grue_forward, H0=self._get_zero_hidden(len(G)),
+        H_vf = self._propagate_from(G, 0, self.grue_forward, H0=self._get_zero_hidden(len(G)),
                              reverse=False)
         if self.bidir:
             H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
                                  H0=self._get_graph_state(G), reverse=True)
+        for _ in range(self.n_rounds - 1):
+            H_vf = self._propagate_from(G, 0, self.grue_forward_v, self.grue_forward_e, H0=H_vf,
+                             reverse=False)
+            if self.bidir:
+                H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward_v, self.grue_backward_e, H0=H_vb,
+                                 reverse=True)
 
         Hg = self._get_graph_state(G, self.bidir)
         return Hg
