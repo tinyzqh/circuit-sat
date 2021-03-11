@@ -160,8 +160,8 @@ def train(epoch):
             # binary_logit = model(g_batch)
             binary_logit, predicted_solutions, solutions = model(g_batch)
             y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
-            # loss= model.loss(binary_logit, y_batch)
-            loss = model.graph_loss(binary_logit, y_batch) + model.solution_loss(predicted_solutions, solutions)
+            loss= model.graph_loss(binary_logit, y_batch)
+            # loss = model.graph_loss(binary_logit, y_batch) + model.solution_loss(predicted_solutions, solutions)
 
             
             loss.backward()
