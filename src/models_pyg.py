@@ -16,6 +16,8 @@ from torch_geometric.data import Data
     I adopt the encoder part, and add two-layer MLP as the classifier.
     For now, the edge information is encoded using one-hot vectors.
     This version is customized for Pytorch Geometric Data.
+
+    BETA: Change the aggeration functions, which includes the previous hidden states.
 '''
 class DVAEncoder_PYG(nn.Module):
     '''
