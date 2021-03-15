@@ -252,7 +252,7 @@ class DVAEncoder_PYG(nn.Module):
                              reverse=False)
         if self.bidir:
             H_vb = self._propagate_from(G, self.max_n-1, self.grue_backward, 
-                                 H0=self._get_graph_state(G), reverse=True)
+                                 H0=self._get_zero_hidden(len(G)), reverse=True)
         for _ in range(self.nrounds - 1):
             H_vf = self._propagate_from(G, 0, self.grue_forward, H0=H_vf,
                              reverse=False)
