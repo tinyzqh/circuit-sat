@@ -66,7 +66,6 @@ def decode_aag_to_pyg(lines, solution, n_vtypes):
         * Internal AND nodes: 1;
         * Internal NOT nodes: 2;
     '''
-    print(lines)
     header = lines[0].strip().split(" ")
     assert header[0] == 'aag', 'The header of AIG file is wrong.'
     # “M”, “I”, “L”, “O”, “A” separated by spaces.
@@ -156,7 +155,6 @@ def decode_aag_to_pyg(lines, solution, n_vtypes):
 
     x = torch.cat(x, dim=0).float()
     edge_index = torch.tensor(edge_index).t().contiguous()
-    print(edge_index)
 
     g = Data(x=x, edge_index=edge_index)
     g.num_literals = n_inputs
@@ -170,7 +168,6 @@ def decode_aag_to_pyg(lines, solution, n_vtypes):
     g.solution = None
     if solution:
         g.solution = torch.tensor(solution, dtype=torch.long)
-    exit()
         
     return g, n_variables
 
