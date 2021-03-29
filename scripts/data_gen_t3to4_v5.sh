@@ -60,7 +60,7 @@
 # train
 DIR_AIG_ABC="data/aig_abc/train/sr3to4"
 DIR_IGRAPG="data"
-DATASET_NAME="sr3to4_train"
+DATASET_NAME="sr3to4_train_NE"
 DIR_SOLUTION="data/dimacs/train/sr3to4"
 
 
@@ -69,7 +69,7 @@ python src/aig_parser.py ${DIR_AIG_ABC} ${DIR_IGRAPG} ${DATASET_NAME} --aig_solu
 # validation
 DIR_AIG_ABC="data/aig_abc/validation/sr5"
 DIR_IGRAPG="data"
-DATASET_NAME="sr5_validation"
+DATASET_NAME="sr5_validation_NE"
 DIR_SOLUTION="data/dimacs/validation/sr5"
 
 

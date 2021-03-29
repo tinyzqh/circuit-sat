@@ -1,6 +1,7 @@
 '''
 Parse AIG graph (*.aag) into igraph format (https://github.com/igraph/python-igraph)
 or Parse AIG graph (*.aag) into PytorchGeometric Data format(https://github.com/rusty1s/pytorch_geometric)
+Circuit-sat: no virtual input node; Represent NOT gate as Node/Virtex.
 '''
 from os import listdir
 from os.path import join, splitext

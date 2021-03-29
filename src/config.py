@@ -1,12 +1,12 @@
 import argparse
 
 
-parser = argparse.ArgumentParser(description='Train GNN (The encoder part from D-VAE) for AIGs')
+parser = argparse.ArgumentParser(description='Circuit-SAT: Learning to Solve Circuit-SAT')
 # general settings
 parser.add_argument('--data-type', default='AIG', choices=['AIG'],
-                    help='AIG format')
-parser.add_argument('--train-data', default='sr3to10', help='graph dataset name')
-parser.add_argument('--test-data', default='sr10', help='graph dataset name')
+                    help='The format to represent circuits, AIG format')
+parser.add_argument('--train-data', default='sr3to4', help='graph dataset name')
+parser.add_argument('--test-data', default='sr5', help='graph dataset name')
 parser.add_argument('--nvt', type=int, default=4, help='number of different node types, \
                     4 for AIG setting')
 parser.add_argument('--save-interval', type=int, default=10, metavar='N',
@@ -17,7 +17,7 @@ parser.add_argument('--only-test', action='store_true', default=False,
 parser.add_argument('--small-train', action='store_true', default=False,
                     help='if True, use a smaller version of train set')
 # model settings
-parser.add_argument('--model', default='DVAEncoder', choices=['DVAEncoder', 'DVAEdgeEncoder'],help='model to use: DVAE. No other options for now.')
+parser.add_argument('--model', default='DGDAGRNN', choices=['DGDAGRNN'],help='model to use: DGDAGRNN. No other options for now.')
 parser.add_argument('--continue-from', type=str, default=None, 
                     help="checkpoint file name to continue training")
 parser.add_argument('--hs', type=int, default=100, metavar='N',
