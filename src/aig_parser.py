@@ -84,7 +84,7 @@ def decode_aag_to_pyg(lines, solution, n_vtypes):
     edge_index = []
     node_types2 = []
 
-    # Add Literal node
+    # Add Literal node
     for i in range(n_inputs):
         x += [one_hot(0, n_vtypes)]
 
@@ -182,12 +182,11 @@ if __name__ == '__main__':
     parser.add_argument('dataset_name', action='store', type=str)
     parser.add_argument('--aig_solution_dir', type=str, default=None)
     parser.add_argument('--gformat', type=str, default='pyg', choices=['pyg', 'igraph'])
-    # parser.add_argument('gen_log', action='store', type=str)
     parser.add_argument('--print_interval', action='store', dest='print_interval', type=int, default=100)
 
     opts = parser.parse_args()
 
-    g_list, graph_args = aig2graph(opts.abcaig_dir, opts.aig_solution_dir, opts.gformat)
+    g_list, graph_args = aig2graph(opts.abcaig_dir, opts.aig_solution_dir)
     print('AIG graph data size: %d' % len(g_list))
 
 
