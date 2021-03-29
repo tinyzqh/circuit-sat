@@ -1,14 +1,14 @@
 import argparse
 
 
-parser = argparse.ArgumentParser(description='Circuit-SAT: Learning to Solve Circuit-SAT')
+parser = argparse.ArgumentParser(description='Circuit-SAT: Learning to Solve Circuit-SAT, Network: DG-DAGRNN')
 # general settings
 parser.add_argument('--data-type', default='AIG', choices=['AIG'],
                     help='The format to represent circuits, AIG format')
 parser.add_argument('--train-data', default='sr3to4', help='graph dataset name')
 parser.add_argument('--test-data', default='sr5', help='graph dataset name')
-parser.add_argument('--nvt', type=int, default=4, help='number of different node types, \
-                    4 for AIG setting')
+parser.add_argument('--nvt', type=int, default=3, help='number of different node types, \
+                    3 for DG setting')
 parser.add_argument('--save-interval', type=int, default=10, metavar='N',
                     help='how many epochs to wait each time to save model states')
 parser.add_argument('--check-inteval', default=None, type=int, help='The intevral to check model weights.')
