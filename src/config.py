@@ -5,8 +5,8 @@ parser = argparse.ArgumentParser(description='Circuit-SAT: Learning to Solve Cir
 # general settings
 parser.add_argument('--data-type', default='AIG', choices=['AIG'],
                     help='The format to represent circuits, AIG format')
-parser.add_argument('--train-data', default='sr3to4_NE', help='graph dataset name')
-parser.add_argument('--test-data', default='sr5_NE', help='graph dataset name')
+parser.add_argument('--train-data', default='sr3to4', help='graph dataset name')
+parser.add_argument('--test-data', default='sr5', help='graph dataset name')
 parser.add_argument('--nvt', type=int, default=3, help='number of different node types, \
                     3 for DG setting')
 parser.add_argument('--save-interval', type=int, default=10, metavar='N',
