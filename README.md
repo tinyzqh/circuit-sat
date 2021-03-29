@@ -45,6 +45,10 @@ I try to implement to GNN functional as the same as the DG-DARGNN as possible, b
 4. Loss Function:
    *  xxx
 
+### Problems
+1. Duplicate NOT nodes may exist.
+2. The ordering is wrong.
+
 
 
 

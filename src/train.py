@@ -23,7 +23,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from util import *
 from models import *
-from models_pyg import *
 
 from config import parser
 
@@ -58,8 +57,8 @@ if not os.path.exists(args.fig_dir):
 '''Prepare data'''
 logger.info('Preparing data...')
 
-train_pkl = os.path.join(args.data_dir, args.train_data + '_train.pkl')
-validation_pkl = os.path.join(args.data_dir, args.test_data + '_validation.pkl')
+train_pkl = os.path.join(args.data_dir, args.train_data + '_train_NE.pkl')
+validation_pkl = os.path.join(args.data_dir, args.test_data + '_validation_NE.pkl')
 if not args.only_test:
     if os.path.isfile(train_pkl):
         with open(train_pkl, 'rb') as f:
@@ -90,28 +89,36 @@ if args.small_train:
     train_data = train_data[:100]
     logger.info('# of training samples shrink: {:d}'.format(len(train_data)))
 
+# print graph example
+sample = train_data[0]
+print("Keys: ", sample.keys)
+print("# Nodes", sample.num_nodes)
+print("# Node Features: ", sample.num_node_features)
+print("contains_isolated_nodes: ", sample.contains_isolated_nodes())
+print("contains_self_loops: ", sample.contains_self_loops())
+print("is_directed: ", sample.is_directed())
+print("x: ")
+print(sample['x'])
+print("edge_index: ")
+print(sample['edge_index'])
+print("bi_layer_index: ")
+print(sample['bi_layer_index'])
+exit()
+
+
 
 '''Prepare the model'''
-# model
-# model = eval(args.model)(
-#         graph_train_args.max_n, 
-#         graph_train_args.num_vertex_type, 
-#         graph_train_args.num_edge_type,
-#         hs=args.hs, 
-#         gs=args.gs,
-#         n_rounds=args.n_rounds,
-#         bidirectional=args.bidirectional,
-#         vid=args.no_invert
-#         )
-model = DVAEncoder_PYG(
+model = DGDAGRNN(
     graph_train_args.max_n, 
     graph_train_args.num_vertex_type, 
-    graph_train_args.num_edge_type,
     nrounds=args.num_rounds,
-    hs=args.hs, bidirectional=True
+    vhs=args.vhs,
+    chs=args.chs,
+    temperature=args.temperature,
+    kstep=args.k_step
 )
 # optimizer and scheduler
-optimizer = optim.Adam(model.parameters(), lr=args.lr)
+optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weght_decay)
 scheduler = ReduceLROnPlateau(optimizer, 'min', factor=0.1, patience=10, verbose=True)
 
 model.to(device)

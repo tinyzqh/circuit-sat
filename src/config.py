@@ -5,8 +5,8 @@ parser = argparse.ArgumentParser(description='Circuit-SAT: Learning to Solve Cir
 # general settings
 parser.add_argument('--data-type', default='AIG', choices=['AIG'],
                     help='The format to represent circuits, AIG format')
-parser.add_argument('--train-data', default='sr3to4', help='graph dataset name')
-parser.add_argument('--test-data', default='sr5', help='graph dataset name')
+parser.add_argument('--train-data', default='sr3to4_NE', help='graph dataset name')
+parser.add_argument('--test-data', default='sr5_NE', help='graph dataset name')
 parser.add_argument('--nvt', type=int, default=3, help='number of different node types, \
                     3 for DG setting')
 parser.add_argument('--save-interval', type=int, default=10, metavar='N',
@@ -20,19 +20,21 @@ parser.add_argument('--small-train', action='store_true', default=False,
 parser.add_argument('--model', default='DGDAGRNN', choices=['DGDAGRNN'],help='model to use: DGDAGRNN. No other options for now.')
 parser.add_argument('--continue-from', type=str, default=None, 
                     help="checkpoint file name to continue training")
-parser.add_argument('--hs', type=int, default=100, metavar='N',
+parser.add_argument('--vhs', type=int, default=100, metavar='N',
                     help='hidden size of GRUs')
-parser.add_argument('--gs', type=int, default=100, metavar='N',
-                    help='number of dimensions of latent vectors z')
-parser.add_argument('--bidirectional', action='store_true', default=False,
-                    help='whether to use bidirectional encoding')
+parser.add_argument('--chs', type=int, default=30, metavar='N',
+                    help='hidden size of Classifiers')
+parser.add_argument('--temperature', type=int, default=5, metavar='N',
+                    help='initial value for temperature')
+parser.add_argument('--k-step', type=int, default=10, metavar='N',
+                    help='the value for step funtion parameter k.')
 parser.add_argument('--num-rounds', type=int, default=10, metavar='N',
                     help='The number of rounds for information propagation.')
-parser.add_argument('--no-invert', action='store_true', default=False,
-                    help='invert the hidden state for inverter or use one-hot vector.')
 # optimization settings
-parser.add_argument('--lr', type=float, default=1e-4, metavar='LR',
+parser.add_argument('--lr', type=float, default=1e-5, metavar='LR',
                     help='learning rate (default: 1e-4)')
+parser.add_argument('--weight-decay', type=float, default=1e-10, 
+                    help='weight decay (default: 1e-10)')
 parser.add_argument('--epochs', type=int, default=300, metavar='N',
                     help='number of epochs to train')
 parser.add_argument('--batch-size', type=int, default=32, metavar='N',
