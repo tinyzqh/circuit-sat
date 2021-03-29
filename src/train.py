@@ -90,8 +90,7 @@ if args.small_train:
     logger.info('# of training samples shrink: {:d}'.format(len(train_data)))
 
 # print graph example
-sample = train_data[0]
-print(sample)
+sample = train_data[0][0]
 print("Keys: ", sample.keys)
 print("# Nodes", sample.num_nodes)
 print("# Node Features: ", sample.num_node_features)
