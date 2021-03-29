@@ -91,6 +91,7 @@ if args.small_train:
 
 # print graph example
 sample = train_data[0]
+print(sample)
 print("Keys: ", sample.keys)
 print("# Nodes", sample.num_nodes)
 print("# Node Features: ", sample.num_node_features)
