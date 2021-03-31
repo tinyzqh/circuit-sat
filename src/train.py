@@ -155,39 +155,40 @@ def train(epoch):
     shuffle(train_data)
     pbar = tqdm(train_data)
     g_batch = []
-    y_batch = []
+    # y_batch = []
     batch_idx = 0
     for i, (g, y) in enumerate(pbar):
+        if y == 0:
+            continue
         g_batch.append(g)
-        y_batch.append(y)
+        # y_batch.append(y)
         if len(g_batch) == args.batch_size or i == len(train_data) - 1:
             batch_idx += 1
             optimizer.zero_grad()
             g_batch = model._collate_fn(g_batch)
             # binary_logit = model(g_batch)
-            binary_logit, predicted_solutions, solutions = model(g_batch)
-            y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
-            loss= model.graph_loss(binary_logit, y_batch)
-            # loss = model.graph_loss(binary_logit, y_batch) + model.solution_loss(predicted_solutions, solutions)
+            satisﬁability = model.solve_and_evaluate(g_batch)
 
-            
+            loss= model.sat_loss(satisﬁability)
+    
             loss.backward()
             optimizer.step()
             if args.check_inteval and (batch_idx % args.check_inteval) == 0:
                 for name, param in model.named_parameters():
                     writer.add_histogram(name, param.clone().cpu().data.numpy(), batch_idx)
 
-            predicted = (binary_logit > 0).to(float)
-            TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
-            TN += (predicted.eq(0) & y_batch.eq(0)).sum().item()
-            FN += (predicted.eq(0) & y_batch.eq(1)).sum().item()
-            FP += (predicted.eq(1) & y_batch.eq(0)).sum().item()
-            TOT = TP + TN + FN + FP
+            # predicted = (binary_logit > 0).to(float)
+            # TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
+            # TN += (predicted.eq(0) & y_batch.eq(0)).sum().item()
+            # FN += (predicted.eq(0) & y_batch.eq(1)).sum().item()
+            # FP += (predicted.eq(1) & y_batch.eq(0)).sum().item()
+            # TOT = TP + TN + FN + FP
 
             train_loss += loss.item()
-            # The calculation of True positive, etc seems wrong...
-            pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
-                             epoch, loss.item()/len(g_batch), 100.*(TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
+            pbar.set_description('Epoch: %d, loss: %0.4f' % (
+                             epoch, loss.item()/len(g_batch)))
+            # pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
+            #                  epoch, loss.item()/len(g_batch), 100.*(TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
             g_batch = []
             y_batch = []
 
@@ -215,7 +216,7 @@ def test(epoch):
             if len(g_batch) == args.batch_size or i == len(train_data) - 1:
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
                 g_batch = model._collate_fn(g_batch)
-                binary_logit, predicted_solutions, solutions = model(g_batch)
+                satisﬁability = model.solve_and_evaluate(g_batch)
                 predicted = (binary_logit > 0).to(float)
                 loss = model.graph_loss(binary_logit, y_batch)
 
@@ -254,14 +255,14 @@ if os.path.exists(loss_name):
     os.remove(loss_name)
 
 if args.only_test:
-    test_loss, test_acc = train(epoch)
+    test_loss, test_acc = test(epoch)
     
 
 for epoch in range(start_epoch + 1, args.epochs + 1):
     model.max_n = graph_test_args.max_n
     train_loss, train_acc = train(epoch)
     model.max_n = graph_test_args.max_n
-    test_loss, test_acc = test(epoch)
+    # test_loss, test_acc = test(epoch)
     with open(loss_name, 'a') as loss_file:
         loss_file.write("{:.2f} {:.2f} \n".format(
             train_loss, 

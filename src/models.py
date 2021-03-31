@@ -75,8 +75,14 @@ class DGDAGRNN(nn.Module):
         self.node_aggr_forward = GatedSumConv(self.vhs, num_rels, mapper=self.mapper_forward, gate=self.gate_forward)
         self.node_aggr_backward = GatedSumConv(self.vhs, num_rels, mapper=self.mapper_backward, gate=self.gate_backward, reverse=True)
 
-        # 4. Loss functions
-        self.sat_loss = self.smooth_step()
+        # 3. evaluator
+        self.soft_evaluator = SoftEvaluator()
+        self.hard_evaluator = HardEvaluator()
+
+        # 4. loss function
+        self.sat_loss = smooth_step()
+
+
 
     def get_device(self):
         if self.device is None:
@@ -109,35 +115,10 @@ class DGDAGRNN(nn.Module):
     def _collate_fn(self, G):
         return [copy.deepcopy(g) for g in G]
 
-
-    def solve(self, predictions_digit):
-        pass
-
-
-
-    def solver(self, G):
-        if type(G) != list:
-            G = [G]
-        # encode graphs G into latent vectors
-        b = Batch.from_data_list(G)
-        assigment = self(b)
-        return assignment
-    
-    def evaluator(self, assignment):
-        pass
-        
-
-
-    def graph_loss(self, binary_logit, y):        
-        return self.sat_loss(binary_logit, y)
-    
-
     def forward(self, G):
-        device = self.get_device()
-        G = G.to(device)
-        
+        # GNN computation to get node embeddings
         num_nodes_batch = G.x.shape[0]
-        num_layrers_batch = max(G.bi_layer[0][0]).item() + 1
+        num_layers_batch = max(G.bi_layer[0][0]).item() + 1
 
         G.h = torch.zeros(num_nodes_batch, self.vhs)
         
@@ -164,7 +145,8 @@ class DGDAGRNN(nn.Module):
                     ps_h = None
                 else:
                     hs1 = G.h
-                    node_agg = self.node_aggr_forward(hs1, lp_edge_index, edge_attr=None)
+                    node_agg = self.node_aggr_forward()
+                    ps_h = node_agg(hs1, lp_edge_index, edge_attr=None, **kwargs)[layer]
                 
                 inp = cell(inp, ps_h)
                 G.h[layer] = inp
@@ -195,6 +177,57 @@ class DGDAGRNN(nn.Module):
                 G.h[layer] = inp
         return G.h
 
+
+    def solver(self, G):
+        if type(G) != list:
+            G = [G]
+        # encode graphs G into latent vectors
+        b = Batch.from_data_list(G)
+        b.to(self.get_device())
+        Hn = self(b)
+        # get the soft-assigment (spase, only has values for variable nodes)
+        num_nodes_batch = G.x.shape[0]
+        b.softassign = torch.zeros(num_nodes_batch, 1)
+        first_layer = G.bi_layer_index[0][0] == 0
+        first_layer = G.bi_layer_index[0][1][first_layer]   # the vertices ID for this batch layer
+        HLiteral = Hn[first_layer]
+        softassign = self.literal_classifier(HLiteral)
+        b.softassign[first_layer] = softassign
+        return b
+    
+    def evaluator(self, G):
+        num_nodes_batch = G.x.shape[0]
+        num_layers_batch = max(G.bi_layer[0][0]).item() + 1
+
+        for l_idx in range(1, num_layers_batch):
+            layer = G.bi_layer_index[0][0] == l_idx
+            layer = G.bi_layer_index[0][1][layer]   # the vertics ID for this batch layer
+            
+            inp = G.softassign[layer]    # input soft assignment
+
+            le_idx = []
+            for n in layer:
+                ne_idx = G.edge_index[1] == n
+                le_idx += [ne_idx.nonzero().squeeze(-1)]    # theindex of edge edge in edg_index
+            le_idx = torch.cat(le_idx, dim=-1)
+            lp_edge_index = G.edge_index[:, le_idx] # the subsetof edge_idx which contains the target vertices ID
+        
+            assignment = G.softassign
+            update_assigment = self.soft_evaluator(assignment,lp_edge_index, node_attr=G.x)[layer]
+            G.softassign[layer] = update_assigment
+
+        last_layer = G.bi_layer_index[1][0] == 0
+        last_layer = G.bi_layer_index[0][1][last_layer]
+        satisﬁability = G.softassign[last_layer]
+        return satisﬁability
+
+    def solve_and_evaluate(self, G):
+        G = self.solver(G)
+        satisﬁability = self.evaluator(G)
+        return satisﬁability
+    
+
+    
         
 
 class GatedSumConv(MessagePassing):  # dvae needs outdim parameter
@@ -261,7 +294,6 @@ class SoftEvaluator(MessagePassing):
         else:
             raise ValueError
 
-
     def update(self, aggr_out):
         return aggr_out
 
@@ -282,13 +314,12 @@ class HardEvaluator(MessagePassing):
 
     def message(self, x_j, node_attr_i):
         # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
-        if node_attr_i[1] == 1.0: 
+        if node_attr_i[0][1] == 1.0: 
             return torch.min(x_j, keepdim=True)
-        elif node_attr_i[2] == 1.0:
+        elif node_attr_i[0][2] == 1.0:
             return 1 - x_j
         else:
             raise ValueError
-
 
     def update(self, aggr_out):
         return aggr_out
