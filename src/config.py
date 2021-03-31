@@ -26,7 +26,7 @@ parser.add_argument('--chs', type=int, default=30, metavar='N',
                     help='hidden size of Classifiers')
 parser.add_argument('--temperature', type=float, default=5.0,
                     help='initial value for temperature')
-parser.add_argument('eplison', type=float, default=0.2,
+parser.add_argument('--eplison', type=float, default=0.2,
                     help='the anneling factore of temperature.')
 parser.add_argument('--k-step', type=float, default=10.0,
                     help='the value for step funtion parameter k.')

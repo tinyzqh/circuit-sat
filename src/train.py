@@ -117,7 +117,7 @@ model = DGDAGRNN(
     kstep=args.k_step
 )
 # optimizer and scheduler
-optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weght_decay)
+optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 scheduler = ReduceLROnPlateau(optimizer, 'min', factor=0.1, patience=10, verbose=True)
 
 model.to(device)
@@ -149,7 +149,7 @@ Define train/test functions.
 def train(epoch):
     model.train()
     train_loss = 0
-    TP, TN, FN, FP = torch.zeros(1).long(), torch.zeros(1).long(), torch.zeros(1).long(), torch.zeros(1).long()
+    # TP, TN, FN, FP = torch.zeros(1).long(), torch.zeros(1).long(), torch.zeros(1).long(), torch.zeros(1).long()
 
     shuffle(train_data)
     pbar = tqdm(train_data)
@@ -166,9 +166,9 @@ def train(epoch):
             optimizer.zero_grad()
             g_batch = model._collate_fn(g_batch)
             # binary_logit = model(g_batch)
-            satisﬁability = model.solve_and_evaluate(g_batch)
+            satisfiability = model.solve_and_evaluate(g_batch)
 
-            loss= model.sat_loss(satisﬁability)
+            loss = model.smooth_step(satisfiability)
     
             loss.backward()
             optimizer.step()
@@ -192,7 +192,8 @@ def train(epoch):
             # y_batch = []
 
     train_loss /= len(train_data)
-    acc = ((TP + TN) * 1.0 / TOT).item()
+    # acc = ((TP + TN) * 1.0 / TOT).item()
+    acc = 0.0
 
     logger.info('====> Epoch Train: {:d} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
           epoch, train_loss, acc))
@@ -215,9 +216,9 @@ def test(epoch):
             if len(g_batch) == args.batch_size or i == len(train_data) - 1:
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
                 g_batch = model._collate_fn(g_batch)
-                satisﬁability = model.solve_and_evaluate(g_batch)
-                predicted = (satisﬁability > 0).to(float)
-                loss = model.sat_loss(binary_logit, y_batch)
+                statisfiability = model.solve_and_evaluate(g_batch)
+                predicted = (statisfiability > 0).to(float)
+                loss = model.sat_loss(statisfiability).mean()
 
                 TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
                 TN += (predicted.eq(0) & y_batch.eq(0)).sum().item()

@@ -9,6 +9,8 @@ import igraph
 import pdb
 import copy
 from torch_geometric.data import Data
+from torch_geometric.nn import MessagePassing
+
 
 from batch import Batch
 
@@ -47,7 +49,7 @@ class DGDAGRNN(nn.Module):
 
         # 1. classifer-related
         self.literal_classifier = nn.Sequential(
-                nn.Linear(self.hs, self.chs),
+                nn.Linear(self.vhs, self.chs),
                 nn.ReLU(),
                 nn.Linear(self.chs, 1),
                 nn.Sigmoid()
@@ -79,7 +81,7 @@ class DGDAGRNN(nn.Module):
         self.hard_evaluator = HardEvaluator()
 
         # 4. loss function
-        self.sat_loss = smooth_step()
+        self.sat_loss = SmoothStep()
 
 
 
@@ -117,12 +119,14 @@ class DGDAGRNN(nn.Module):
     def forward(self, G):
         # GNN computation to get node embeddings
         num_nodes_batch = G.x.shape[0]
-        num_layers_batch = max(G.bi_layer[0][0]).item() + 1
+        num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
 
-        G.h = torch.zeros(num_nodes_batch, self.vhs)
+        G.h = torch.zeros(num_nodes_batch, self.vhs).to(self.get_device())
         
         # forward
         for round_idx in range(self.nrounds):
+            if round_idx > 0:
+                G.x_hat = self.projector(G.h)
             for l_idx in range(num_layers_batch):
                 layer = G.bi_layer_index[0][0] == l_idx
                 layer = G.bi_layer_index[0][1][layer]   # the vertices ID for this batch layer
@@ -130,7 +134,7 @@ class DGDAGRNN(nn.Module):
                 if round_idx == 0:
                     inp = G.x[layer]    # input node feature vector
                 else:
-                    inp = self.projector(G.h)
+                    inp = G.x_hat[layer]
                 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
@@ -144,10 +148,9 @@ class DGDAGRNN(nn.Module):
                     ps_h = None
                 else:
                     hs1 = G.h
-                    node_agg = self.node_aggr_forward()
-                    ps_h = node_agg(hs1, lp_edge_index, edge_attr=None, **kwargs)[layer]
+                    ps_h = self.node_aggr_forward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
-                inp = cell(inp, ps_h)
+                inp = self.grue_forward(inp, ps_h)
                 G.h[layer] = inp
             
             # backword
@@ -155,7 +158,7 @@ class DGDAGRNN(nn.Module):
                 layer = G.bi_layer_index[1][0] == l_idx
                 layer = G.bi_layer_index[1][1][layer]   # the vertices ID for this batch layer
 
-                inp = G.x[layer]    # input node feature vector
+                inp = G.h[layer]    # input node hidden vector
                 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
@@ -168,13 +171,12 @@ class DGDAGRNN(nn.Module):
                 if l_idx == 0:
                     ps_h = None
                 else:
-                    hs1 = G.h[0]
-                    node_agg = self.node_aggr_backward(hs1, lp_edge_index, edge_attr=None)
-                    ps_h = node_agg(hs1, lp_edge_index, edge_attr=None, **kwargs)[layer]
+                    hs1 = G.h
+                    ps_h = self.node_aggr_backward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
-                inp = cell(inp, ps_h)
+                inp = self.grue_backward(inp, ps_h)
                 G.h[layer] = inp
-        return G.h
+        return G
 
 
     def solver(self, G):
@@ -183,16 +185,16 @@ class DGDAGRNN(nn.Module):
         # encode graphs G into latent vectors
         b = Batch.from_data_list(G)
         b.to(self.get_device())
-        Hn = self(b)
+        G = self(b)
         # get the soft-assigment (spase, only has values for variable nodes)
         num_nodes_batch = G.x.shape[0]
-        b.softassign = torch.zeros(num_nodes_batch, 1)
+        G.softassign = torch.zeros(num_nodes_batch, 1).to(self.get_device())
         first_layer = G.bi_layer_index[0][0] == 0
         first_layer = G.bi_layer_index[0][1][first_layer]   # the vertices ID for this batch layer
-        HLiteral = Hn[first_layer]
+        HLiteral = G.h[first_layer]
         softassign = self.literal_classifier(HLiteral)
-        b.softassign[first_layer] = softassign
-        return b
+        G.softassign[first_layer] = softassign
+        return G
     
     def evaluator(self, G):
         num_nodes_batch = G.x.shape[0]
@@ -273,7 +275,7 @@ class SoftEvaluator(MessagePassing):
     Not node => 1 - z;
     '''
     def __init__(self, temperature=5.0):
-        super(GatedSumConv, self).__init__(aggr='add', flow='source_to_target')
+        super(SoftEvaluator, self).__init__(aggr='add', flow='source_to_target')
 
         self.temperature = 5.0
         self.softmin = nn.Softmin(dim=0)
@@ -302,7 +304,7 @@ class HardEvaluator(MessagePassing):
     Not node => 1 - z;
     '''
     def __init__(self, temperature=5.0):
-        super(GatedSumConv, self).__init__(aggr='add', flow='source_to_target')
+        super(HardEvaluator, self).__init__(aggr='add', flow='source_to_target')
 
         self.softmin = nn.Softmin(dim=0)
 
@@ -330,7 +332,7 @@ class LogicEvaluator(MessagePassing):
     The differecnce between `LogicEvaluator` and `HardEvaluator` is that we discrete the soft assignment int 0/1 at the beginning.
     '''
     def __init__(self, temperature=5.0):
-        super(GatedSumConv, self).__init__(aggr='add', flow='source_to_target')
+        super(LogicEvaluator, self).__init__(aggr='add', flow='source_to_target')
 
         self.softmin = nn.Softmin(dim=0)
 
@@ -352,3 +354,12 @@ class LogicEvaluator(MessagePassing):
     def update(self, aggr_out):
         return aggr_out
 
+
+class SmoothStep(nn.Module):
+    def __init__(self, kstep=10.0):
+        super(SmoothStep, self).__init__()
+        self.kstep = kstep
+    
+    def forward(self, x):
+        output = torch.pow(1-inputs, self.kstep) / (torch.pow(1-inputs, self.kstep) + torch.pow(inputs, self.kstep))
+        return output
