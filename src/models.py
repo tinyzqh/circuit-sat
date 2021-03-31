@@ -145,8 +145,8 @@ class DGDAGRNN(nn.Module):
                     hs1 = G.h[round_idx]
                     ps_h = self.node_aggr_forward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
-                inp = self.grue_forward(inp, ps_h)
-                G.h[round_idx][layer] += inp
+                c_h = self.grue_forward(inp, ps_h)
+                G.h[round_idx][layer] += c_h
             
             # backword
             for l_idx in range(num_layers_batch):
@@ -169,8 +169,8 @@ class DGDAGRNN(nn.Module):
                     hs1 = G.h[round_idx]
                     ps_h = self.node_aggr_backward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
-                inp = self.grue_backward(inp, ps_h)
-                G.h[round_idx][layer] += inp
+                c_h = self.grue_backward(inp, ps_h)
+                G.h[round_idx][layer] += c_h
         return G
 
 
@@ -210,7 +210,7 @@ class DGDAGRNN(nn.Module):
         
             assignment = G.softassign
             update_assigment = self.soft_evaluator(assignment,lp_edge_index, node_attr=G.x)[layer]
-            G.softassign[layer] = update_assigment
+            G.softassign[layer] += update_assigment
 
         last_layer = G.bi_layer_index[1][0] == 0
         last_layer = G.bi_layer_index[0][1][last_layer]
