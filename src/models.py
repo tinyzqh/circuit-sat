@@ -28,9 +28,8 @@ class DGDAGRNN(nn.Module):
         kstep (float, default: 10.0) - the value of k in soft step function.
         num_rounds (integer, default: 10) - # GRU iterations. 
     '''
-    def __init__(self, max_n, nvt=3, vhs=100, chs=30, temperature=5.0, kstep=10.0, nrounds=10):
+    def __init__(self, nvt=3, vhs=100, chs=30, temperature=5.0, kstep=10.0, nrounds=10):
         super(DGDAGRNN, self).__init__()
-        self.max_n = max_n # maximum number of vertices
         self.nvt = nvt  # number of vertex types
         self.vhs = vhs  # hidden state size of each vertex
         self.chs = chs  # hidden state size of classifier
@@ -76,7 +75,7 @@ class DGDAGRNN(nn.Module):
         self.node_aggr_backward = GatedSumConv(self.vhs, num_rels, mapper=self.mapper_backward, gate=self.gate_backward, reverse=True)
 
         # 3. evaluator
-        self.soft_evaluator = SoftEvaluator()
+        self.soft_evaluator = SoftEvaluator(temperature=self.temperature)
         self.hard_evaluator = HardEvaluator()
 
         # 4. loss function
@@ -309,6 +308,35 @@ class HardEvaluator(MessagePassing):
 
 
     def forward(self, x, edge_index, node_attr=None):
+
+        return self.propagate(edge_index, x=x, node_attr=node_attr)
+
+    def message(self, x_j, node_attr_i):
+        # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
+        if node_attr_i[0][1] == 1.0: 
+            return torch.min(x_j, keepdim=True)
+        elif node_attr_i[0][2] == 1.0:
+            return 1 - x_j
+        else:
+            raise ValueError
+
+    def update(self, aggr_out):
+        return aggr_out
+
+class LogicEvaluator(MessagePassing):
+    '''
+    AND node => Hard Min;
+    Not node => 1 - z;
+    The differecnce between `LogicEvaluator` and `HardEvaluator` is that we discrete the soft assignment int 0/1 at the beginning.
+    '''
+    def __init__(self, temperature=5.0):
+        super(GatedSumConv, self).__init__(aggr='add', flow='source_to_target')
+
+        self.softmin = nn.Softmin(dim=0)
+
+
+    def forward(self, x, edge_index, node_attr=None):
+        x = (x > 0.5).float()
 
         return self.propagate(edge_index, x=x, node_attr=node_attr)
 

@@ -37,7 +37,7 @@ else:
     device = torch.device("cpu")
 np.random.seed(args.seed)
 random.seed(args.seed)
-
+args.temperature = torch.tensor(args.temperature, dtype=torch.float64)
 args.exp_name = '{}_{}_{}_vhs{:d}_chs{:d}_nr{:d}_lr{:.2e}_b{:d}'.format(args.train_data, args.test_data, args.model, args.vhs, args.chs, 
                             args.num_rounds, args.lr, args.batch_size)
 log_dir = os.path.join(args.log_dir, args.exp_name + '.log')
@@ -109,7 +109,6 @@ if args.small_train:
 
 '''Prepare the model'''
 model = DGDAGRNN(
-    graph_train_args.max_n, 
     graph_train_args.num_vertex_type, 
     nrounds=args.num_rounds,
     vhs=args.vhs,
@@ -190,7 +189,7 @@ def train(epoch):
             # pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
             #                  epoch, loss.item()/len(g_batch), 100.*(TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
             g_batch = []
-            y_batch = []
+            # y_batch = []
 
     train_loss /= len(train_data)
     acc = ((TP + TN) * 1.0 / TOT).item()
@@ -217,10 +216,9 @@ def test(epoch):
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
                 g_batch = model._collate_fn(g_batch)
                 satisﬁability = model.solve_and_evaluate(g_batch)
-                predicted = (binary_logit > 0).to(float)
-                loss = model.graph_loss(binary_logit, y_batch)
+                predicted = (satisﬁability > 0).to(float)
+                loss = model.sat_loss(binary_logit, y_batch)
 
-                predicted = (binary_logit > 0).to(float)
                 TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
                 TN += (predicted.eq(0) & y_batch.eq(0)).sum().item()
                 FN += (predicted.eq(0) & y_batch.eq(1)).sum().item()
@@ -259,10 +257,9 @@ if args.only_test:
     
 
 for epoch in range(start_epoch + 1, args.epochs + 1):
-    model.max_n = graph_test_args.max_n
     train_loss, train_acc = train(epoch)
-    model.max_n = graph_test_args.max_n
-    # test_loss, test_acc = test(epoch)
+    test_loss, test_acc = test(epoch)
+    args.temperature = args.temperature.pow(-args.eplison)
     with open(loss_name, 'a') as loss_file:
         loss_file.write("{:.2f} {:.2f} \n".format(
             train_loss, 
