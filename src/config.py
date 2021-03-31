@@ -24,9 +24,9 @@ parser.add_argument('--vhs', type=int, default=100, metavar='N',
                     help='hidden size of GRUs')
 parser.add_argument('--chs', type=int, default=30, metavar='N',
                     help='hidden size of Classifiers')
-parser.add_argument('--temperature', type=int, default=5, metavar='N',
+parser.add_argument('--temperature', type=float, default=5.0,
                     help='initial value for temperature')
-parser.add_argument('--k-step', type=int, default=10, metavar='N',
+parser.add_argument('--k-step', type=float, default=10.0,
                     help='the value for step funtion parameter k.')
 parser.add_argument('--num-rounds', type=int, default=10, metavar='N',
                     help='The number of rounds for information propagation.')

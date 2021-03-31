@@ -90,20 +90,20 @@ if args.small_train:
     logger.info('# of training samples shrink: {:d}'.format(len(train_data)))
 
 # print graph example
-sample = train_data[0][0]
-print("Keys: ", sample.keys)
-print("# Nodes", sample.num_nodes)
-print("# Node Features: ", sample.num_node_features)
-print("contains_isolated_nodes: ", sample.contains_isolated_nodes())
-print("contains_self_loops: ", sample.contains_self_loops())
-print("is_directed: ", sample.is_directed())
-print("x: ")
-print(sample['x'])
-print("edge_index: ")
-print(sample['edge_index'])
-print("bi_layer_index: ")
-print(sample['bi_layer_index'])
-exit()
+# sample = train_data[0][0]
+# print("Keys: ", sample.keys)
+# print("# Nodes", sample.num_nodes)
+# print("# Node Features: ", sample.num_node_features)
+# print("contains_isolated_nodes: ", sample.contains_isolated_nodes())
+# print("contains_self_loops: ", sample.contains_self_loops())
+# print("is_directed: ", sample.is_directed())
+# print("x: ")
+# print(sample['x'])
+# print("edge_index: ")
+# print(sample['edge_index'])
+# print("bi_layer_index: ")
+# print(sample['bi_layer_index'])
+# exit()
 
 
 
