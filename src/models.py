@@ -81,7 +81,7 @@ class DGDAGRNN(nn.Module):
         self.hard_evaluator = HardEvaluator()
 
         # 4. loss function
-        self.sat_loss = SmoothStep()
+        self.sat_loss = SmoothStep(kstep=self.kstep)
 
 
 
@@ -89,12 +89,6 @@ class DGDAGRNN(nn.Module):
         if self.device is None:
             self.device = next(self.parameters()).device
         return self.device
-    
-    def smooth_step(self, inputs, k):
-        output = torch.pow(1-inputs, k) / (torch.pow(1-inputs, k) + torch.pow(inputs, k))
-        output = torch.mean(output)
-        return output
-    
     
     def _get_zeros(self, n, length):
         return torch.zeros(n, length).to(self.get_device()) # get a zero hidden state
@@ -198,7 +192,7 @@ class DGDAGRNN(nn.Module):
     
     def evaluator(self, G):
         num_nodes_batch = G.x.shape[0]
-        num_layers_batch = max(G.bi_layer[0][0]).item() + 1
+        num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
 
         for l_idx in range(1, num_layers_batch):
             layer = G.bi_layer_index[0][0] == l_idx
@@ -282,18 +276,15 @@ class SoftEvaluator(MessagePassing):
 
 
     def forward(self, x, edge_index, node_attr=None):
-
         return self.propagate(edge_index, x=x, node_attr=node_attr)
 
     def message(self, x_j, node_attr_i):
         # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
-        if node_attr_i[1] == 1.0: 
-            tmp = self.softmin(x_j / self.temperature)
-            return x_j * temp
-        elif node_attr_i[2] == 1.0:
-            return 1 - x_j
-        else:
-            raise ValueError
+        and_idx = node_attr_i[:, 1] == 1.0
+        x_j[and_idx] *= self.softmin(x_j[and_idx] / self.temperature)
+        not_idx = node_attr_i[:, 2] == 1.0
+        x_j[not_idx] = 1 - x_j[not_idx]
+        return x_j
 
     def update(self, aggr_out):
         return aggr_out
@@ -315,12 +306,11 @@ class HardEvaluator(MessagePassing):
 
     def message(self, x_j, node_attr_i):
         # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
-        if node_attr_i[0][1] == 1.0: 
-            return torch.min(x_j, keepdim=True)
-        elif node_attr_i[0][2] == 1.0:
-            return 1 - x_j
-        else:
-            raise ValueError
+        and_idx = node_attr_i[:, 1] == 1.0
+        x_j[and_idx] = torch.min(x_j[and_idx], keepdim=True)
+        not_idx = node_attr_i[:, 2] == 1.0
+        x_j[not_idx] = 1 - x_j[not_idx]
+        return x_j
 
     def update(self, aggr_out):
         return aggr_out
@@ -344,12 +334,11 @@ class LogicEvaluator(MessagePassing):
 
     def message(self, x_j, node_attr_i):
         # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
-        if node_attr_i[0][1] == 1.0: 
-            return torch.min(x_j, keepdim=True)
-        elif node_attr_i[0][2] == 1.0:
-            return 1 - x_j
-        else:
-            raise ValueError
+        and_idx = node_attr_i[:, 1] == 1.0
+        x_j[and_idx] = torch.min(x_j[and_idx], keepdim=True)
+        not_idx = node_attr_i[:, 2] == 1.0
+        x_j[not_idx] = 1 - x_j[not_idx]
+        return x_j
 
     def update(self, aggr_out):
         return aggr_out
@@ -360,6 +349,6 @@ class SmoothStep(nn.Module):
         super(SmoothStep, self).__init__()
         self.kstep = kstep
     
-    def forward(self, x):
-        output = torch.pow(1-inputs, self.kstep) / (torch.pow(1-inputs, self.kstep) + torch.pow(inputs, self.kstep))
-        return output
+    def forward(self, inputs):
+        outputs = torch.pow(1-inputs, self.kstep) / (torch.pow(1-inputs, self.kstep) + torch.pow(inputs, self.kstep))
+        return outputs

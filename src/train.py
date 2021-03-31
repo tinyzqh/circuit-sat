@@ -9,6 +9,7 @@ from loguru import logger
 from tqdm import tqdm
 from shutil import copy
 import torch
+torch.autograd.set_detect_anomaly(True)
 from torch import nn, optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from tensorboardX import SummaryWriter
@@ -168,7 +169,7 @@ def train(epoch):
             # binary_logit = model(g_batch)
             satisfiability = model.solve_and_evaluate(g_batch)
 
-            loss = model.smooth_step(satisfiability)
+            loss = model.sat_loss(satisfiability).mean()
     
             loss.backward()
             optimizer.step()
