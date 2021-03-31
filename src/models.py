@@ -170,7 +170,7 @@ class DGDAGRNN(nn.Module):
                     ps_h = self.node_aggr_backward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
                 inp = self.grue_backward(inp, ps_h)
-                G.h[round_idx][layer] = inp
+                G.h[round_idx][layer] += inp
         return G
 
 
