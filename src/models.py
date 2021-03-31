@@ -121,7 +121,7 @@ class DGDAGRNN(nn.Module):
         # forward
         for round_idx in range(self.nrounds):
             if round_idx > 0:
-                G.x_hat[round_idx-1] = self.projector(G.h[round_idx])
+                G.x_hat[round_idx-1] += self.projector(G.h[round_idx])
             for l_idx in range(num_layers_batch):
                 layer = G.bi_layer_index[0][0] == l_idx
                 layer = G.bi_layer_index[0][1][layer]   # the vertices ID for this batch layer
