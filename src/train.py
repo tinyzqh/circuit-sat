@@ -220,6 +220,8 @@ def test(epoch):
                 statisfiability = model.solve_and_evaluate(g_batch)
                 predicted = (statisfiability > 0).to(float)
                 loss = model.sat_loss(statisfiability).mean()
+                print(predicted.size())
+                print(y_batch.size())
 
                 TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
                 TN += (predicted.eq(0) & y_batch.eq(0)).sum().item()

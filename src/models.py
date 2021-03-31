@@ -121,7 +121,7 @@ class DGDAGRNN(nn.Module):
         # forward
         for round_idx in range(self.nrounds):
             if round_idx > 0:
-                G.x_hat[round_idx-1] += self.projector(G.h[round_idx])
+                G.x_hat[round_idx-1] += self.projector(G.h[1][round_idx])
             for l_idx in range(num_layers_batch):
                 layer = G.bi_layer_index[0][0] == l_idx
                 layer = G.bi_layer_index[0][1][layer]   # the vertices ID for this batch layer
@@ -153,7 +153,7 @@ class DGDAGRNN(nn.Module):
                 layer = G.bi_layer_index[1][0] == l_idx
                 layer = G.bi_layer_index[1][1][layer]   # the vertices ID for this batch layer
 
-                inp = G.hp[0][round_idx][layer]    # input node hidden vector
+                inp = G.h[0][round_idx][layer]    # input node hidden vector
                 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
@@ -166,7 +166,7 @@ class DGDAGRNN(nn.Module):
                 if l_idx == 0:
                     ps_h = None
                 else:
-                    hs1 = G.h[round_idx]
+                    hs1 = G.h[0][round_idx]
                     ps_h = self.node_aggr_backward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
                 c_h = self.grue_backward(inp, ps_h)
@@ -213,14 +213,14 @@ class DGDAGRNN(nn.Module):
             G.softassign[layer] += update_assigment
 
         last_layer = G.bi_layer_index[1][0] == 0
-        last_layer = G.bi_layer_index[0][1][last_layer]
-        satisﬁability = G.softassign[last_layer]
-        return satisﬁability
+        last_layer = G.bi_layer_index[1][1][last_layer]
+        satisfiability = G.softassign[last_layer]
+        return satisfiability 
 
     def solve_and_evaluate(self, G):
         G = self.solver(G)
-        satisﬁability = self.evaluator(G)
-        return satisﬁability
+        satisfiability = self.evaluator(G)
+        return satisfiability
     
 
     
