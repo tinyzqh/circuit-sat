@@ -115,7 +115,7 @@ class DGDAGRNN(nn.Module):
         num_nodes_batch = G.x.shape[0]
         num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
 
-        G.h = [torch.zeros(num_nodes_batch, self.vhs).to(self.get_device()) for _ in range(self.nrounds)]
+        G.h = [[torch.zeros(num_nodes_batch, self.vhs).to(self.get_device()) for _ in range(self.nrounds)] for _ in range(self.num_layers)]
         G.x_hat = [torch.zeros(num_nodes_batch, self.nvt).to(self.get_device()) for _ in range(self.nrounds-1)]
         
         # forward
@@ -142,18 +142,18 @@ class DGDAGRNN(nn.Module):
                 if l_idx == 0:
                     ps_h = None
                 else:
-                    hs1 = G.h[round_idx]
+                    hs1 = G.h[0][round_idx]
                     ps_h = self.node_aggr_forward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
                 c_h = self.grue_forward(inp, ps_h)
-                G.h[round_idx][layer] += c_h
+                G.h[0][round_idx][layer] += c_h
             
             # backword
             for l_idx in range(num_layers_batch):
                 layer = G.bi_layer_index[1][0] == l_idx
                 layer = G.bi_layer_index[1][1][layer]   # the vertices ID for this batch layer
 
-                inp = G.h[round_idx][layer]    # input node hidden vector
+                inp = G.hp[0][round_idx][layer]    # input node hidden vector
                 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
@@ -170,7 +170,7 @@ class DGDAGRNN(nn.Module):
                     ps_h = self.node_aggr_backward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
                 c_h = self.grue_backward(inp, ps_h)
-                G.h[round_idx][layer] += c_h
+                G.h[1][round_idx][layer] += c_h
         return G
 
 
@@ -186,9 +186,9 @@ class DGDAGRNN(nn.Module):
         G.softassign = torch.zeros(num_nodes_batch, 1).to(self.get_device())
         first_layer = G.bi_layer_index[0][0] == 0
         first_layer = G.bi_layer_index[0][1][first_layer]   # the vertices ID for this batch layer
-        HLiteral = G.h[self.nrounds-1][first_layer]
+        HLiteral = G.h[1][self.nrounds-1][first_layer]
         softassign = self.literal_classifier(HLiteral)
-        G.softassign[first_layer] = softassign
+        G.softassign[first_layer] += softassign
         return G
     
     def evaluator(self, G):
