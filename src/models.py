@@ -245,11 +245,15 @@ class DGDAGRNN(nn.Module):
         num_nodes_batch = G.x.shape[0]
         num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
 
+        G.hardassign = torch.zeros(num_nodes_batch, 1).to(self.get_device())
+        layer = G.bi_layer_index[0][0] == 0
+        layer = G.bi_layer_index[0][1][layer]  
+        G.hardassign[layer] = (G.softassign[layer] > 0.5).float()
         for l_idx in range(1, num_layers_batch):
             layer = G.bi_layer_index[0][0] == l_idx
             layer = G.bi_layer_index[0][1][layer]   # the vertics ID for this batch layer
             
-            inp = G.softassign[layer]    # input soft assignment
+            inp = G.hardassign[layer]    # input hard assignment
 
             le_idx = []
             for n in layer:
@@ -258,13 +262,13 @@ class DGDAGRNN(nn.Module):
             le_idx = torch.cat(le_idx, dim=-1)
             lp_edge_index = G.edge_index[:, le_idx] # the subsetof edge_idx which contains the target vertices ID
         
-            assignment = G.softassign
+            assignment = G.hardassign
             update_assigment = self.hard_evaluator(assignment,lp_edge_index, node_attr=G.x)[layer]
-            G.softassign[layer] += update_assigment
+            G.hardassign[layer] += update_assigment
 
         last_layer = G.bi_layer_index[1][0] == 0
         last_layer = G.bi_layer_index[1][1][last_layer]
-        return G.softassign[last_layer]
+        return G.hardassign[last_layer]
     
         
 
@@ -350,7 +354,7 @@ class HardEvaluator(MessagePassing):
     def message(self, x_j, node_attr_i):
         # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
         and_idx = node_attr_i[:, 1] == 1.0
-        x_j[and_idx] = torch.min(x_j[and_idx], keepdim=True)
+        x_j[and_idx] = torch.min(x_j[and_idx], dim=1, keepdim=True)
         not_idx = node_attr_i[:, 2] == 1.0
         x_j[not_idx] = 1 - x_j[not_idx]
         return x_j
@@ -378,7 +382,7 @@ class LogicEvaluator(MessagePassing):
     def message(self, x_j, node_attr_i):
         # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
         and_idx = node_attr_i[:, 1] == 1.0
-        x_j[and_idx] = torch.min(x_j[and_idx], keepdim=True)
+        x_j[and_idx] = torch.min(x_j[and_idx], dim=1, keepdim=True)
         not_idx = node_attr_i[:, 2] == 1.0
         x_j[not_idx] = 1 - x_j[not_idx]
         return x_j
