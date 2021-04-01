@@ -33,7 +33,7 @@ For AIG, the nodes can be categorized as the literal node, internal AND nodes, i
 ### GNN Design
 I try to implement to GNN functional as the same as the DG-DARGNN as possible, but there's some implementation difference.
 
-1. Graph nodes: no OR gate type for now, cause I use AIG to represent the circuits.
+1. Graph nodes: There's no OR gate type for now, cause I use AIG to represent the circuits.
 2. Solver Network:
    * GCN: 1 (q-100D) forward GRU layer followed by 1 (q-100) reversed GRU layer. 
    * The embedding computation is iteratively run for T Times. A FC mapping function to do it (100D-to-3D). May be modified later.
@@ -43,11 +43,8 @@ I try to implement to GNN functional as the same as the DG-DARGNN as possible, b
    *  AND -> smooth min function
    *  NOT -> 1-z functionm
 4. Loss Function:
-   *  xxx
+   *  SmoothStep function.
 
-### Problems
-1. Duplicate NOT nodes may exist.
-2. The ordering is wrong.
 
 
 
