@@ -127,7 +127,7 @@ class DGDAGRNN(nn.Module):
             if round_idx > 0:
                 print('Project G.h to G.x_hat: ')
                 print('G.h size: ', G.h.size())
-                G.x_hat = self.projector(G.h.detach())
+                G.x_hat = self.projector(G.h.clone())
                 print('G.x_hat size: ', G.x_hat.size())
             
             # forwarding
