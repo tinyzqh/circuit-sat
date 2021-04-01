@@ -167,9 +167,9 @@ def train(epoch):
             optimizer.zero_grad()
             g_batch = model._collate_fn(g_batch)
             # binary_logit = model(g_batch)
-            satisfiability = model.solve_and_evaluate(g_batch)
+            G = model.solve_and_evaluate(g_batch)
 
-            loss = model.sat_loss(satisfiability).mean()
+            loss = model.sat_loss(G.satisfiability).mean()
     
             loss.backward()
             optimizer.step()
@@ -217,9 +217,9 @@ def test(epoch):
             if len(g_batch) == args.batch_size or i == len(train_data) - 1:
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
                 g_batch = model._collate_fn(g_batch)
-                statisfiability = model.solve_and_evaluate(g_batch)
-                predicted = (statisfiability > 0).to(float)
-                loss = model.sat_loss(statisfiability).mean()
+                G = model.solve_and_evaluate(g_batch)
+                predicted = (G.statisfiability > 0).to(float)
+                loss = model.sat_loss(G.statisfiability).mean()
                 print(predicted.size())
                 print(y_batch.size())
 

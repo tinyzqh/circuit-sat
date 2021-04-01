@@ -192,7 +192,7 @@ class DGDAGRNN(nn.Module):
         G.softassign = torch.zeros(num_nodes_batch, 1).to(self.get_device())
         first_layer = G.bi_layer_index[0][0] == 0
         first_layer = G.bi_layer_index[0][1][first_layer]   # the vertices ID for this batch layer
-        HLiteral = G.h[1][self.nrounds-1][first_layer]
+        HLiteral = G.h[first_layer]
         softassign = self.literal_classifier(HLiteral)
         G.softassign[first_layer] += softassign
         return G
@@ -210,7 +210,7 @@ class DGDAGRNN(nn.Module):
             le_idx = []
             for n in layer:
                 ne_idx = G.edge_index[1] == n
-                le_idx += [ne_idx.nonzero().squeeze(-1)]    # theindex of edge edge in edg_index
+                le_idx += [torch.nonzero(ne_idx, as_tuple=False).squeeze(-1)]    # theindex of edge edge in edg_index
             le_idx = torch.cat(le_idx, dim=-1)
             lp_edge_index = G.edge_index[:, le_idx] # the subsetof edge_idx which contains the target vertices ID
         
@@ -220,13 +220,13 @@ class DGDAGRNN(nn.Module):
 
         last_layer = G.bi_layer_index[1][0] == 0
         last_layer = G.bi_layer_index[1][1][last_layer]
-        satisfiability = G.softassign[last_layer]
-        return satisfiability 
+        G.satisfiability = G.softassign[last_layer]
+        return G 
 
     def solve_and_evaluate(self, G):
         G = self.solver(G)
-        satisfiability = self.evaluator(G)
-        return satisfiability
+        G = self.evaluator(G)
+        return G
     
 
     
