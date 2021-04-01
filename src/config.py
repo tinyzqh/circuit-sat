@@ -37,6 +37,8 @@ parser.add_argument('--lr', type=float, default=1e-5, metavar='LR',
                     help='learning rate (default: 1e-4)')
 parser.add_argument('--weight-decay', type=float, default=1e-10, 
                     help='weight decay (default: 1e-10)')
+parser.add_argument('--grad-clip', type=float, default=0.65,
+                    help='gradiant clipping')
 parser.add_argument('--epochs', type=int, default=300, metavar='N',
                     help='number of epochs to train')
 parser.add_argument('--batch-size', type=int, default=128, metavar='N',

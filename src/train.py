@@ -150,18 +150,16 @@ Define train/test functions.
 def train(epoch):
     model.train()
     train_loss = 0
-    # TP, TN, FN, FP = torch.zeros(1).long(), torch.zeros(1).long(), torch.zeros(1).long(), torch.zeros(1).long()
+    SAT, TOT = torch.zeros(1).long(), torch.zeros(1).long()
 
     shuffle(train_data)
     pbar = tqdm(train_data)
     g_batch = []
-    # y_batch = []
     batch_idx = 0
     for i, (g, y) in enumerate(pbar):
         if y == 0:
             continue
         g_batch.append(g)
-        # y_batch.append(y)
         if len(g_batch) == args.batch_size or i == len(train_data) - 1:
             batch_idx += 1
             optimizer.zero_grad()
@@ -170,31 +168,29 @@ def train(epoch):
             G = model.solve_and_evaluate(g_batch)
 
             loss = model.sat_loss(G.satisfiability).mean()
+
     
             loss.backward()
+            if args.grad_clip > 0:
+                torch.nn.utils.clip_grad_norm(model.parameters(), args.grad_clip)
             optimizer.step()
             if args.check_inteval and (batch_idx % args.check_inteval) == 0:
                 for name, param in model.named_parameters():
                     writer.add_histogram(name, param.clone().cpu().data.numpy(), batch_idx)
-
-            # predicted = (binary_logit > 0).to(float)
-            # TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
-            # TN += (predicted.eq(0) & y_batch.eq(0)).sum().item()
-            # FN += (predicted.eq(0) & y_batch.eq(1)).sum().item()
-            # FP += (predicted.eq(1) & y_batch.eq(0)).sum().item()
-            # TOT = TP + TN + FN + FP
+            
+            predicted = model.hard_check(G)
+            SAT += predicted.eq(1).sum().item()
+            TOT += predicted.size(0)
 
             train_loss += loss.item()
-            pbar.set_description('Epoch: %d, loss: %0.4f' % (
-                             epoch, loss.item()/len(g_batch)))
-            # pbar.set_description('Epoch: %d, loss: %0.4f, Acc: %.3f%%, TP: %.3f, TN: %.3f, FN: %.3f, FP: %.3f' % (
-            #                  epoch, loss.item()/len(g_batch), 100.*(TP + TN) * 1.0 / TOT, TP * 1.0 / TOT, TN * 1.0 / TOT, FN * 1.0 / TOT, FP * 1.0 / TOT))
+            pbar.set_description('Epoch: %d, loss: %0.4f, SAT/TOT: %0.4f' % (
+                             epoch, loss.item()/len(g_batch), 100.*SAT/TOT))
+
             g_batch = []
-            # y_batch = []
 
     train_loss /= len(train_data)
     # acc = ((TP + TN) * 1.0 / TOT).item()
-    acc = 0.0
+    acc =(SAT * 1.0 / TOT).item()
 
     logger.info('====> Epoch Train: {:d} Average loss: {:.4f}, Accuracy: {:.4f}'.format(
           epoch, train_loss, acc))
@@ -218,10 +214,8 @@ def test(epoch):
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
                 g_batch = model._collate_fn(g_batch)
                 G = model.solve_and_evaluate(g_batch)
-                predicted = (G.statisfiability > 0).to(float)
-                loss = model.sat_loss(G.statisfiability).mean()
-                print(predicted.size())
-                print(y_batch.size())
+                predicted = (G.satisfiability > 0).to(float)
+                loss = model.sat_loss(G.satisfiability).mean()
 
                 TP += (predicted.eq(1) & y_batch.eq(1)).sum().item()
                 TN += (predicted.eq(0) & y_batch.eq(0)).sum().item()

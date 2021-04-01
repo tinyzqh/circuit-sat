@@ -22,7 +22,6 @@ class DGDAGRNN(nn.Module):
     '''
     The implemnetation of DGDAGRNN with Pytorch Geometric.
     Attributes:
-        max_n (integer) - The maximum number of vertices of graph dataset
         nvt (integer, default: 3) - # vertex types.
         vhs (integer, default: 100) - the size of hidden state of nodes.
         chs (integer, default: 30) - the size of hidden state of classifier.
@@ -127,7 +126,7 @@ class DGDAGRNN(nn.Module):
             if round_idx > 0:
                 # print('Project G.h to G.x_hat: ')
                 # print('G.h size: ', G.h.size())
-                G.x_hat = self.projector(G.h.clone())
+                G.x_hat = self.projector(G.h.clone())   # should add .clone() to avoid errors
                 # print('G.x_hat size: ', G.x_hat.size())
             
             # forwarding
@@ -241,7 +240,31 @@ class DGDAGRNN(nn.Module):
         G = self.evaluator(G)
         return G
     
+    
+    def hard_check(self, G):
+        num_nodes_batch = G.x.shape[0]
+        num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
 
+        for l_idx in range(1, num_layers_batch):
+            layer = G.bi_layer_index[0][0] == l_idx
+            layer = G.bi_layer_index[0][1][layer]   # the vertics ID for this batch layer
+            
+            inp = G.softassign[layer]    # input soft assignment
+
+            le_idx = []
+            for n in layer:
+                ne_idx = G.edge_index[1] == n
+                le_idx += [torch.nonzero(ne_idx, as_tuple=False).squeeze(-1)]    # theindex of edge edge in edg_index
+            le_idx = torch.cat(le_idx, dim=-1)
+            lp_edge_index = G.edge_index[:, le_idx] # the subsetof edge_idx which contains the target vertices ID
+        
+            assignment = G.softassign
+            update_assigment = self.hard_evaluator(assignment,lp_edge_index, node_attr=G.x)[layer]
+            G.softassign[layer] += update_assigment
+
+        last_layer = G.bi_layer_index[1][0] == 0
+        last_layer = G.bi_layer_index[1][1][last_layer]
+        return G.softassign[last_layer]
     
         
 
