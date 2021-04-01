@@ -113,27 +113,27 @@ class DGDAGRNN(nn.Module):
     def forward(self, G):
         # GNN computation to get node embeddings
         num_nodes_batch = G.x.shape[0]
-        print('# nodes for this batch: ', num_nodes_batch)
+        # print('# nodes for this batch: ', num_nodes_batch)
         num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
-        print('# layers for this batch: ', num_layers_batch)
+        # print('# layers for this batch: ', num_layers_batch)
 
         G.h = torch.zeros(num_nodes_batch, self.vhs).to(self.get_device())
-        print('Size of hidden states: ', G.h.size())
+        # print('Size of hidden states: ', G.h.size())
         
         
         # forward
         for round_idx in range(self.nrounds):
-            print('######## Round: ', round_idx)
+            # print('######## Round: ', round_idx)
             if round_idx > 0:
-                print('Project G.h to G.x_hat: ')
-                print('G.h size: ', G.h.size())
+                # print('Project G.h to G.x_hat: ')
+                # print('G.h size: ', G.h.size())
                 G.x_hat = self.projector(G.h.clone())
-                print('G.x_hat size: ', G.x_hat.size())
+                # print('G.x_hat size: ', G.x_hat.size())
             
             # forwarding
-            print('Forwarding...')
+            # print('Forwarding...')
             for l_idx in range(num_layers_batch):
-                print('# layer: ', l_idx)
+                # print('# layer: ', l_idx)
                 layer = G.bi_layer_index[0][0] == l_idx
                 layer = G.bi_layer_index[0][1][layer]   # the vertices ID for this batch layer
                 
@@ -141,7 +141,7 @@ class DGDAGRNN(nn.Module):
                     inp = G.x[layer]    # input node feature vector
                 else:
                     inp = G.x_hat[layer]
-                print("Input feature size: ", inp.size())
+                # print("Input feature size: ", inp.size())
                 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
@@ -150,7 +150,6 @@ class DGDAGRNN(nn.Module):
                         le_idx += [torch.nonzero(ne_idx, as_tuple=False).squeeze(-1)]    # the index of edge edge in edg_index
                     le_idx = torch.cat(le_idx, dim=-1)
                     lp_edge_index = G.edge_index[:, le_idx] # the subset of edge_idx which contains the target vertices ID
-                    # print('Size of new edge_index: ', lp_edge_index.size())
                 
                 if l_idx == 0:
                     ps_h = None
@@ -159,23 +158,19 @@ class DGDAGRNN(nn.Module):
                     ps_h = self.node_aggr_forward(hs1, lp_edge_index, edge_attr=None)[layer]
                     print('Aggregated hidden size: ', ps_h.size())
 
-                
-                c_h = self.grue_forward(inp, ps_h)
-                print('Update hidden size: ', c_h.size())
-                G.h[layer] = c_h
-                # G.h[0][round_idx][layer] += c_h
+                G.h[layer] = self.grue_forward(inp, ps_h)
+
 
             
             # backwording
-            print('Backwarding')
+            # print('Backwarding')
             for l_idx in range(num_layers_batch):
-                print('# layer: ', l_idx)
+                # print('# layer: ', l_idx)
                 layer = G.bi_layer_index[1][0] == l_idx
                 layer = G.bi_layer_index[1][1][layer]   # the vertices ID for this batch layer
 
-                # inp = G.h[0][round_idx][layer]    # input node hidden vector
                 inp = G.h[layer]
-                print("Input feature size: ", inp.size())
+                # print("Input feature size: ", inp.size())
 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
@@ -190,13 +185,11 @@ class DGDAGRNN(nn.Module):
                 else:
                     hs1 = G.h
                     ps_h = self.node_aggr_backward(hs1, lp_edge_index, edge_attr=None)[layer]
-                    print('Aggregated hidden size: ', ps_h.size())
+                    # print('Aggregated hidden size: ', ps_h.size())
 
                 
-                c_h = self.grue_backward(inp, ps_h)
-                print('Update hidden size: ', c_h.size())
-                G.h[layer] = c_h
-                # G.h[1][round_idx][layer] += c_h
+                G.h[layer] = self.grue_backward(inp, ps_h)
+                # print('Update hidden size: ', c_h.size())
         return G
 
 
