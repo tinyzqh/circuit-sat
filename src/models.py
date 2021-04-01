@@ -354,7 +354,7 @@ class HardEvaluator(MessagePassing):
     def message(self, x_j, node_attr_i):
         # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
         and_idx = node_attr_i[:, 1] == 1.0
-        x_j[and_idx] = torch.min(x_j[and_idx], dim=1, keepdim=True)
+        x_j[and_idx] = torch.min(x_j[and_idx], dim=1, keepdim=True)[0]
         not_idx = node_attr_i[:, 2] == 1.0
         x_j[not_idx] = 1 - x_j[not_idx]
         return x_j
@@ -382,7 +382,7 @@ class LogicEvaluator(MessagePassing):
     def message(self, x_j, node_attr_i):
         # x_j has shape [E, out_channels], where out_channel is jut one-dimentional value in range of (0, 1)
         and_idx = node_attr_i[:, 1] == 1.0
-        x_j[and_idx] = torch.min(x_j[and_idx], dim=1, keepdim=True)
+        x_j[and_idx] = torch.min(x_j[and_idx], dim=1, keepdim=True)[0]
         not_idx = node_attr_i[:, 2] == 1.0
         x_j[not_idx] = 1 - x_j[not_idx]
         return x_j
