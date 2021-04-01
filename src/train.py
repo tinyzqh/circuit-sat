@@ -258,7 +258,7 @@ if args.only_test:
     
 
 for epoch in range(start_epoch + 1, args.epochs + 1):
-    train_loss, train_acc = train(epoch)
+    # train_loss, train_acc = train(epoch)
     test_loss, test_acc = test(epoch)
     args.temperature = args.temperature.pow(-args.eplison)
     with open(loss_name, 'a') as loss_file:
