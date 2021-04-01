@@ -215,6 +215,8 @@ def test(epoch):
                 print(len(g_batch))
                 g_batch = model._collate_fn(g_batch)
                 G = model.solve_and_evaluate(g_batch)
+                layer = G.bi_layer_index[1][0] == 0
+                print(layer.sum())
                 predicted = (G.satisfiability > 0).to(float)
                 loss = model.sat_loss(G.satisfiability).mean()
 
