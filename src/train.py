@@ -206,10 +206,10 @@ def test(epoch):
     pbar = tqdm(test_data)
     g_batch = []
     y_batch = []
-    count = 0
     with torch.no_grad():
         for i, (g, y) in enumerate(pbar):
             g_batch.append(g)
+            y_batch.append(y)
             if len(g_batch) == args.batch_size or i == len(test_data) - 1:
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
                 g_batch = model._collate_fn(g_batch)
@@ -256,37 +256,37 @@ if args.only_test:
 
 for epoch in range(start_epoch + 1, args.epochs + 1):
     train_loss, train_acc = train(epoch)
-    test_loss, test_acc = test(epoch)
+    # test_loss, test_acc = test(epoch)
     args.temperature = args.temperature.pow(-args.eplison)
-    with open(loss_name, 'a') as loss_file:
-        loss_file.write("{:.2f} {:.2f} \n".format(
-            train_loss, 
-            train_acc
-            ))
+    # with open(loss_name, 'a') as loss_file:
+    #     loss_file.write("{:.2f} {:.2f} \n".format(
+    #         train_loss, 
+    #         train_acc
+    #         ))
     scheduler.step(train_loss)
-    if epoch % args.save_interval == 0:
-        logger.info("Save current model...")
-        ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
-        ckpt_name = os.path.join(args.res_dir, 'model_checkpoint{}.pth'.format(epoch))
-        torch.save(ckpt, ckpt_name)
-        
-        losses = np.loadtxt(loss_name)
-        if losses.ndim == 1:
-            continue
-        fig = plt.figure()
-        num_points = losses.shape[0]
-        plt.plot(range(1, num_points+1), losses[:, 0], label='Train_Loss')
-        plt.plot(range(1, num_points+1), losses[:, 1], label='Train_Acc')
-        plt.xlabel('Epoch')
-        plt.ylabel('Training')
-        plt.legend()
-        plt.savefig(loss_plot_name)
-    
-    if test_acc >= best_acc:
-        best_acc = test_acc
-        ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
-        ckpt_name = os.path.join(args.res_dir, 'model_best.pth'.format(epoch))
-        torch.save(ckpt, ckpt_name)
+    # if epoch % args.save_interval == 0:
+    #     logger.info("Save current model...")
+    #     ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
+    #     ckpt_name = os.path.join(args.res_dir, 'model_checkpoint{}.pth'.format(epoch))
+    #     torch.save(ckpt, ckpt_name)
+    #     
+    #     losses = np.loadtxt(loss_name)
+    #     if losses.ndim == 1:
+    #         continue
+    #     fig = plt.figure()
+    #     num_points = losses.shape[0]
+    #     plt.plot(range(1, num_points+1), losses[:, 0], label='Train_Loss')
+    #     plt.plot(range(1, num_points+1), losses[:, 1], label='Train_Acc')
+    #     plt.xlabel('Epoch')
+    #     plt.ylabel('Training')
+    #     plt.legend()
+    #     plt.savefig(loss_plot_name)
+    # 
+    # if test_acc >= best_acc:
+    #     best_acc = test_acc
+    #     ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
+    #     ckpt_name = os.path.join(args.res_dir, 'model_best.pth'.format(epoch))
+    #     torch.save(ckpt, ckpt_name)
 
 ckpt = {'epoch': epoch+1, 'acc': best_acc, 'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict(), 'scheduler': scheduler.state_dict()}
 ckpt_name = os.path.join(args.res_dir, 'model_last.pth'.format(epoch))

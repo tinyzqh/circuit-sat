@@ -24,7 +24,7 @@ parser.add_argument('--vhs', type=int, default=100, metavar='N',
                     help='hidden size of GRUs')
 parser.add_argument('--chs', type=int, default=30, metavar='N',
                     help='hidden size of Classifiers')
-parser.add_argument('--temperature', type=float, default=5.0,
+parser.add_argument('--temperature', type=float, default=1.0,
                     help='initial value for temperature')
 parser.add_argument('--eplison', type=float, default=0.2,
                     help='the anneling factore of temperature.')
@@ -41,7 +41,7 @@ parser.add_argument('--grad-clip', type=float, default=0.65,
                     help='gradiant clipping')
 parser.add_argument('--epochs', type=int, default=300, metavar='N',
                     help='number of epochs to train')
-parser.add_argument('--batch-size', type=int, default=128, metavar='N',
+parser.add_argument('--batch-size', type=int, default=256, metavar='N',
                     help='batch size during training')
 parser.add_argument('--infer-batch-size', type=int, default=128, metavar='N',
                     help='batch size during inference')
