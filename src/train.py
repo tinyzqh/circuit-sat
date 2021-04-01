@@ -172,7 +172,7 @@ def train(epoch):
     
             loss.backward()
             if args.grad_clip > 0:
-                torch.nn.utils.clip_grad_norm(model.parameters(), args.grad_clip)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
             optimizer.step()
             if args.check_inteval and (batch_idx % args.check_inteval) == 0:
                 for name, param in model.named_parameters():
