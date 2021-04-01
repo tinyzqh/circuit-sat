@@ -212,6 +212,7 @@ def test(epoch):
             y_batch.append(y)
             if len(g_batch) == args.batch_size or i == len(train_data) - 1:
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
+                print(len(g_batch))
                 g_batch = model._collate_fn(g_batch)
                 G = model.solve_and_evaluate(g_batch)
                 predicted = (G.satisfiability > 0).to(float)
