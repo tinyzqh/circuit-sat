@@ -115,13 +115,16 @@ class DGDAGRNN(nn.Module):
         num_nodes_batch = G.x.shape[0]
         num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
 
-        G.h = [[torch.zeros(num_nodes_batch, self.vhs).to(self.get_device()) for _ in range(self.nrounds)] for _ in range(self.num_layers)]
-        G.x_hat = [torch.zeros(num_nodes_batch, self.nvt).to(self.get_device()) for _ in range(self.nrounds-1)]
+        # G.h = [[torch.zeros(num_nodes_batch, self.vhs).to(self.get_device()) for _ in range(self.nrounds)] for _ in range(self.num_layers)]
+        G.h = torch.zeros(num_nodes_batch, self.vhs).to(self.get_device())
+        # G.x_hat = [torch.zeros(num_nodes_batch, self.nvt).to(self.get_device()) for _ in range(self.nrounds-1)]
+        # G.x_hat = torch.zeros(num_nodes_batch, self.nvt).to(self.get_device())
         
         # forward
         for round_idx in range(self.nrounds):
             if round_idx > 0:
-                G.x_hat[round_idx-1] += self.projector(G.h[1][round_idx])
+                # G.x_hat[round_idx-1] += self.projector(G.h[1][round_idx])
+                G.x_hat = self.projector(G.h)
             for l_idx in range(num_layers_batch):
                 layer = G.bi_layer_index[0][0] == l_idx
                 layer = G.bi_layer_index[0][1][layer]   # the vertices ID for this batch layer
@@ -129,48 +132,51 @@ class DGDAGRNN(nn.Module):
                 if round_idx == 0:
                     inp = G.x[layer]    # input node feature vector
                 else:
-                    inp = G.x_hat[round_idx-1][layer]
+                    inp = G.x_hat[layer]
                 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
                     for n in layer:
                         ne_idx = G.edge_index[1] == n
-                        le_idx += [ne_idx.nonzero().squeeze(-1)]    # the index of edge edge in edg_index
+                        le_idx += [torch.nonzero(ne_idx, as_tuple=False).squeeze(-1)]    # the index of edge edge in edg_index
                     le_idx = torch.cat(le_idx, dim=-1)
                     lp_edge_index = G.edge_index[:, le_idx] # the subset of edge_idx which contains the target vertices ID
                 
                 if l_idx == 0:
                     ps_h = None
                 else:
-                    hs1 = G.h[0][round_idx]
+                    hs1 = G.h
                     ps_h = self.node_aggr_forward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
-                c_h = self.grue_forward(inp, ps_h)
-                G.h[0][round_idx][layer] += c_h
+                # c_h = self.grue_forward(inp, ps_h)
+                G.h[layer] = self.grue_forward(inp, ps_h)
+                # G.h[0][round_idx][layer] += c_h
+
             
             # backword
             for l_idx in range(num_layers_batch):
                 layer = G.bi_layer_index[1][0] == l_idx
                 layer = G.bi_layer_index[1][1][layer]   # the vertices ID for this batch layer
 
-                inp = G.h[0][round_idx][layer]    # input node hidden vector
+                # inp = G.h[0][round_idx][layer]    # input node hidden vector
+                inp = G.h[layer]
                 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
                     for n in layer:
                         ne_idx = G.edge_index[1] == n
-                        le_idx += [ne_idx.nonzero().squeeze(-1)]    # the index of edge edge in edg_index
+                        le_idx += [torch.nonzero(ne_idx, as_tuple=False).squeeze(-1)]    # the index of edge edge in edg_index
                     le_idx = torch.cat(le_idx, dim=-1)
                     lp_edge_index = G.edge_index[:, le_idx] # the subset of edge_idx which contains the target vertices ID
                 
                 if l_idx == 0:
                     ps_h = None
                 else:
-                    hs1 = G.h[0][round_idx]
+                    hs1 = G.h
                     ps_h = self.node_aggr_backward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
-                c_h = self.grue_backward(inp, ps_h)
-                G.h[1][round_idx][layer] += c_h
+                G.h[layer] = self.grue_backward(inp, ps_h)
+                # G.h[1][round_idx][layer] += c_h
         return G
 
 

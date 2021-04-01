@@ -30,7 +30,7 @@ parser.add_argument('--eplison', type=float, default=0.2,
                     help='the anneling factore of temperature.')
 parser.add_argument('--k-step', type=float, default=10.0,
                     help='the value for step funtion parameter k.')
-parser.add_argument('--num-rounds', type=int, default=1, metavar='N',
+parser.add_argument('--num-rounds', type=int, default=10, metavar='N',
                     help='The number of rounds for information propagation.')
 # optimization settings
 parser.add_argument('--lr', type=float, default=1e-5, metavar='LR',
