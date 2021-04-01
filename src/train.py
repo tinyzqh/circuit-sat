@@ -206,17 +206,14 @@ def test(epoch):
     pbar = tqdm(test_data)
     g_batch = []
     y_batch = []
+    count = 0
     with torch.no_grad():
         for i, (g, y) in enumerate(pbar):
             g_batch.append(g)
-            y_batch.append(y)
-            if len(g_batch) == args.batch_size or i == len(train_data) - 1:
+            if len(g_batch) == args.batch_size or i == len(test_data) - 1:
                 y_batch = torch.FloatTensor(y_batch).unsqueeze(1).to(device)
-                print(len(g_batch))
                 g_batch = model._collate_fn(g_batch)
                 G = model.solve_and_evaluate(g_batch)
-                layer = G.bi_layer_index[1][0] == 0
-                print(layer.sum())
                 predicted = (G.satisfiability > 0).to(float)
                 loss = model.sat_loss(G.satisfiability).mean()
 
@@ -258,7 +255,7 @@ if args.only_test:
     
 
 for epoch in range(start_epoch + 1, args.epochs + 1):
-    # train_loss, train_acc = train(epoch)
+    train_loss, train_acc = train(epoch)
     test_loss, test_acc = test(epoch)
     args.temperature = args.temperature.pow(-args.eplison)
     with open(loss_name, 'a') as loss_file:
