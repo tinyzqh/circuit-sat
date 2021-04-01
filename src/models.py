@@ -156,9 +156,10 @@ class DGDAGRNN(nn.Module):
                 else:
                     hs1 = G.h
                     ps_h = self.node_aggr_forward(hs1, lp_edge_index, edge_attr=None)[layer]
+                    print('Aggregated hidden size: ', ps_h.size())
+
                 
                 # c_h = self.grue_forward(inp, ps_h)
-                print('Aggregated hidden size: ', ps_h.size())
                 G.h[layer] = self.grue_forward(inp, ps_h)
                 # G.h[0][round_idx][layer] += c_h
 
