@@ -113,19 +113,26 @@ class DGDAGRNN(nn.Module):
     def forward(self, G):
         # GNN computation to get node embeddings
         num_nodes_batch = G.x.shape[0]
+        print('# nodes for this batch: ', num_nodes_batch)
         num_layers_batch = max(G.bi_layer_index[0][0]).item() + 1
+        print('# layers for this batch: ', num_layers_batch)
 
-        # G.h = [[torch.zeros(num_nodes_batch, self.vhs).to(self.get_device()) for _ in range(self.nrounds)] for _ in range(self.num_layers)]
         G.h = torch.zeros(num_nodes_batch, self.vhs).to(self.get_device())
-        # G.x_hat = [torch.zeros(num_nodes_batch, self.nvt).to(self.get_device()) for _ in range(self.nrounds-1)]
-        # G.x_hat = torch.zeros(num_nodes_batch, self.nvt).to(self.get_device())
+        print('Size of hidden states: ', G.h.size())
+        
         
         # forward
         for round_idx in range(self.nrounds):
+            print('######## Round: ', round_idx)
             if round_idx > 0:
-                # G.x_hat[round_idx-1] += self.projector(G.h[1][round_idx])
+                print('Project G.h to G.x_hat: ')
+                print('G.h size: ', G.h.size())
                 G.x_hat = self.projector(G.h)
+                print('G.x_hat size: ', G.x_hat.size())
+            
+            # forwarding
             for l_idx in range(num_layers_batch):
+                print('# layer: ', l_idx)
                 layer = G.bi_layer_index[0][0] == l_idx
                 layer = G.bi_layer_index[0][1][layer]   # the vertices ID for this batch layer
                 
@@ -133,6 +140,7 @@ class DGDAGRNN(nn.Module):
                     inp = G.x[layer]    # input node feature vector
                 else:
                     inp = G.x_hat[layer]
+                print("Input feature size: ", inp.size())
                 
                 if l_idx > 0:   # no predecessors at first layer
                     le_idx = []
@@ -141,6 +149,7 @@ class DGDAGRNN(nn.Module):
                         le_idx += [torch.nonzero(ne_idx, as_tuple=False).squeeze(-1)]    # the index of edge edge in edg_index
                     le_idx = torch.cat(le_idx, dim=-1)
                     lp_edge_index = G.edge_index[:, le_idx] # the subset of edge_idx which contains the target vertices ID
+                    # print('Size of new edge_index: ', lp_edge_index.size())
                 
                 if l_idx == 0:
                     ps_h = None
@@ -149,11 +158,12 @@ class DGDAGRNN(nn.Module):
                     ps_h = self.node_aggr_forward(hs1, lp_edge_index, edge_attr=None)[layer]
                 
                 # c_h = self.grue_forward(inp, ps_h)
+                print('Aggregated hidden size: ', ps_h.size())
                 G.h[layer] = self.grue_forward(inp, ps_h)
                 # G.h[0][round_idx][layer] += c_h
 
             
-            # backword
+            # backwording
             for l_idx in range(num_layers_batch):
                 layer = G.bi_layer_index[1][0] == l_idx
                 layer = G.bi_layer_index[1][1][layer]   # the vertices ID for this batch layer
